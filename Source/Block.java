@@ -20,7 +20,6 @@ public class Block {
 		this.height = height;
 
 		blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
-
 	}
 
 	public void swing(int screenWidth) {

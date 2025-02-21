@@ -1,7 +1,5 @@
 package Source;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class App {
 	// Screen
@@ -29,14 +27,5 @@ public class App {
 		frame.add(gamePanel);
 		frame.pack();
 		frame.setVisible(true);
-
-		Timer timer = new Timer(1000, (ActionListener) new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				background.addBlock();
-			}
-		});
-		timer.start();
 	}
-	}
-
+}
