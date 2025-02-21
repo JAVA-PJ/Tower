@@ -2,25 +2,30 @@ package Source;
 import javax.swing.JFrame;
 
 
-public class Game {
-	int boardWidth = 750;
-	int boardHeight = 1000;
-	JFrame frame;
-	Background background;
+public class App {
+	// Screen
+	int screenWidth = 750;
+	int screenHeight = 1000;
 
-	public Game() {
+	// Frame
+	JFrame frame;
+
+	// Game Panel
+	GamePanel gamePanel;
+
+	public App() {
 		start();
 	}
 
 	public void start() {
 		frame = new JFrame("Tower Building");
-		frame.setSize(boardWidth, boardHeight);
+		frame.setSize(screenWidth, screenHeight);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		background = new Background();
-		frame.add(background);
+		gamePanel = new GamePanel();
+		frame.add(gamePanel);
 		frame.pack();
 		frame.setVisible(true);
 	}
