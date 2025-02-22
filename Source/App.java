@@ -1,31 +1,26 @@
 package Source;
-import javax.swing.*;
-
-public class App {
+import javax.swing.JFrame;
+import javax.swing.Timer;
+public class App extends JFrame {
 	// Screen
-	int screenWidth = 750;
-	int screenHeight = 1000;
+	protected static final int HEIGHT = 1000;
+	protected static final int WIDTH = 700;
 
-	// Frame
-	JFrame frame;
-
-	// Game Panel
-	GamePanel gamePanel;
+	// Display
+	Display dp;
 
 	public App() {
-		start();
-	}
-
-	public void start() {
-		frame = new JFrame("Tower Building");
-		frame.setSize(screenWidth, screenHeight);
-		frame.setLocationRelativeTo(null);
-		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		dp = new Display();
+		setTitle("Tower Game");
+		setSize(WIDTH, HEIGHT);
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		add(dp);
+		pack();
+		setVisible(true);
 		
-		gamePanel = new GamePanel();
-		frame.add(gamePanel);
-		frame.pack();
-		frame.setVisible(true);
+		Timer gameLoop = new Timer(0, e -> dp.gameLoop());
+        gameLoop.start();
 	}
 }

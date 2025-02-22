@@ -4,39 +4,41 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 public class Block {
-	protected int x, y, width, height;
+	// Block Size
+	protected final int Width = 200;
+	protected final int Height = 140;
+
+	// Block Position
+	protected int posX = 275;
+	protected int posY = 50;
+
+	// Block Movement
 	protected boolean falling = false;
 	private int speedX = 10;
-	private int speedY = 10;
+	private int speedY = 15;
 
-	// Image
+	// Block Image
     private Image blockImg;
 
-
-	public Block (int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-
+	public Block () {
 		blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
 	}
 
 	public void swing(int screenWidth) {
 		if (!falling) {
-			x += speedX;
-			if (x < 0 || x + width > screenWidth)
+			posX += speedX;
+			if (posX < 0 || posX + Width > screenWidth)
 				speedX *= -1;
 		}
 	}
 
 	public void fall() {
 		falling = true;
-		y += speedY;
+		posY += speedY;
 	}
 
 	public void draw(Graphics g) {
 		if (blockImg != null)
-			g.drawImage(blockImg, x, y, width, height, null);
+			g.drawImage(blockImg, posX, posY, Width, Height, null);
 	}
 }
