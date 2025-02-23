@@ -6,11 +6,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 public class TowerGameMenu extends JFrame {
-    private JButton StartButton, HowToPlayButton, ExitButton;
-    private JLabel SoundButton,SunGifLabel;
+    private JButton StartButton, HowToPlayButton,ExitButton;
+    private JLabel SoundButton,SungifLabel;
     private BackgroundMusic Music;
     private boolean isMuted = false;
-    
+
     class Background extends JPanel {
         private Image backgroundImage;
 
@@ -30,7 +30,7 @@ public class TowerGameMenu extends JFrame {
         setResizable(true);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        Music = new BackgroundMusic("Asset/Sound_background.wav");
+        Music = new BackgroundMusic("Asset/BgMusic.wav");
         Music.play();
 
         // BackgroundPanel
@@ -38,9 +38,9 @@ public class TowerGameMenu extends JFrame {
         background.setLayout(null);
         setContentPane(background);
 
-        ImageIcon sunGif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
-        SunGifLabel = new JLabel(sunGif);
-        background.add(SunGifLabel,0); // เพิ่ม GIF ลงพื้นหลัง
+        ImageIcon sungif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
+        SungifLabel = new JLabel(sungif);
+        background.add(SungifLabel,0); // เพิ่ม GIF ลงพื้นหลัง
 
         //อัพไอคอนเสียง
         ImageIcon soundOn = new ImageIcon(new ImageIcon(getClass().getResource("Asset/sound_On.png")).getImage()
@@ -71,7 +71,6 @@ public class TowerGameMenu extends JFrame {
             public void mouseExited(MouseEvent e) {
                 SoundButton.setBorder(null);
             }
-
         });
 
         background.add(SoundButton);
@@ -103,7 +102,7 @@ public class TowerGameMenu extends JFrame {
             this.revalidate();
             this.repaint();
         });
-    
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -114,7 +113,6 @@ public class TowerGameMenu extends JFrame {
         resizeComponents();
         setVisible(true);
     }
-
     private JButton createStyledButton(String text) {
         return new Button(text);
     }
@@ -126,14 +124,12 @@ public class TowerGameMenu extends JFrame {
         int sunX = Math.max(100, width / 60);    
         int sunY = Math.max(1, height / 80);  
         //โหลดgifใหม่
-        ImageIcon sungif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
-        Image scalegif = sungif.getImage().getScaledInstance(sunSize, sunSize, Image.SCALE_DEFAULT);
-        
+        ImageIcon Sungif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
+        Image scalegif = Sungif.getImage().getScaledInstance(sunSize, sunSize, Image.SCALE_DEFAULT);
         //อัปเดตgifใหม่
-        SunGifLabel.setIcon(new ImageIcon(scalegif));
-        
+        SungifLabel.setIcon(new ImageIcon(scalegif));
         //เซ็ทตำแหน่งของgif
-        SunGifLabel.setBounds(sunX, sunY, sunSize, sunSize);
+        SungifLabel.setBounds(sunX, sunY, sunSize, sunSize);
     }
     //ตำแหน่งปุ่ม GUI
     private void resizeComponents() {
@@ -144,7 +140,6 @@ public class TowerGameMenu extends JFrame {
         int X = width / 2 - buttonW / 2;
         int space = height / 20;
         int Y = height / 4; 
-
         StartButton.setBounds(X, Y, buttonW, buttonH);
         HowToPlayButton.setBounds(X, Y + space + buttonH, buttonW, buttonH);
         ExitButton.setBounds(X, Y + 2 * (space + buttonH), buttonW, buttonH);
