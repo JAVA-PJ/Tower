@@ -14,7 +14,6 @@ public class HowToPlay extends JPanel {
         this.frame = frame;
         setLayout(null); 
         backgroundImage = new ImageIcon(getClass().getResource("Asset/HowToPlay.png")).getImage(); //พื้นหลัง
-
         ImageIcon Icon = new ImageIcon(getClass().getResource("Asset/ButtonBack.png"));  //ภาพปุ่ม Back
         Image scaledImage = Icon.getImage().getScaledInstance(150, 70, Image.SCALE_SMOOTH);
         ImageIcon backIcon = new ImageIcon(scaledImage);
@@ -39,8 +38,7 @@ public class HowToPlay extends JPanel {
             }
         });
         add(backButton); // เพิ่มปุ่มลง
-        //ปรับขนาดปุ่มตามขนาดหน้าจอ
-        frame.addComponentListener(new ComponentAdapter() {
+        frame.addComponentListener(new ComponentAdapter() {    //ปรับขนาดปุ่มตามขนาดหน้าจอ
             @Override
             public void componentResized(ComponentEvent e) {
                 updateBackButtonPosition(); 
@@ -48,7 +46,7 @@ public class HowToPlay extends JPanel {
         });
         updateBackButtonPosition();
     }
-    //คำนวณขนาดปุ่มให้เหมาะสมกับหน้าจอ
+    //คำนวณขนาดปุ่มให้เหมาะสมกับหน้าจอ กับ ตำแหน่งของปุ่ม
     private void updateBackButtonPosition() {
         int fWidth = frame.getWidth();
         int fHeight = frame.getHeight();
