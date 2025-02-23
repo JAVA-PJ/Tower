@@ -10,12 +10,16 @@ public class App extends JFrame {
 	Display dp;
 
 	public App() {
-		dp = new Display();
+		gameStart();
+	}
+
+	private void gameStart() {
 		setTitle("Tower Game");
 		setSize(WIDTH, HEIGHT);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		dp = new Display();
 		add(dp);
 		pack();
 		setVisible(true);

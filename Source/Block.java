@@ -5,11 +5,11 @@ import javax.swing.ImageIcon;
 
 public class Block {
 	// Block Size
-	protected final int Width = 200;
+	protected final int Width = 180;
 	protected final int Height = 140;
 
 	// Block Position
-	protected int posX = 275;
+	protected int posX = 260;
 	protected int posY = 50;
 
 	// Block Movement
