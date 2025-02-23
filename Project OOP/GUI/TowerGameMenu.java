@@ -7,10 +7,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 public class TowerGameMenu extends JFrame {
     private JButton StartButton, HowToPlayButton, ExitButton;
-    private JLabel SoundButton;
+    private JLabel SoundButton,SunGifLabel;
     private BackgroundMusic Music;
     private boolean isMuted = false;
-
+    
     class Background extends JPanel {
         private Image backgroundImage;
 
@@ -23,7 +23,6 @@ public class TowerGameMenu extends JFrame {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
-
     public TowerGameMenu() {
         setTitle("Tower Game");
         setSize(1080, 600);
@@ -34,10 +33,14 @@ public class TowerGameMenu extends JFrame {
         Music = new BackgroundMusic("Asset/Sound_background.wav");
         Music.play();
 
-        //BackgroundPanel
-        Background background = new Background("Asset/Newbackground.png");
+        // BackgroundPanel
+        Background background = new Background("Asset/Sunsetbg.png");
         background.setLayout(null);
         setContentPane(background);
+
+        ImageIcon sunGif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
+        SunGifLabel = new JLabel(sunGif);
+        background.add(SunGifLabel,0); // เพิ่ม GIF ลงพื้นหลัง
 
         //อัพไอคอนเสียง
         ImageIcon soundOn = new ImageIcon(new ImageIcon(getClass().getResource("Asset/sound_On.png")).getImage()
@@ -50,7 +53,7 @@ public class TowerGameMenu extends JFrame {
         SoundButton.setBounds(30, 35, 70, 50);
         SoundButton.setOpaque(false);
 
-            //คลิก เปิด-ปิดเสียง
+        // คลิก เปิด-ปิดเสียง
         SoundButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -60,15 +63,15 @@ public class TowerGameMenu extends JFrame {
             //เมื่อชี้เมาส์เข้าไป
             @Override
             public void mouseEntered(MouseEvent e) {
-                SoundButton.setBackground(new Color(150, 150, 150, 150)); 
-                SoundButton.setOpaque(true);
+                SoundButton.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255, 150), 2));
             }
 
             //เมื่อเอาเมาส์ออกมา
             @Override
             public void mouseExited(MouseEvent e) {
-                SoundButton.setOpaque(false); 
+                SoundButton.setBorder(null);
             }
+
         });
 
         background.add(SoundButton);
@@ -77,17 +80,12 @@ public class TowerGameMenu extends JFrame {
         WindEffect wind = new WindEffect(getWidth(), getHeight());
         wind.setBounds(0, 0, getWidth(), getHeight());
         background.add(wind);
+  
 
         // ปุ่มหลักสามปุ่ม
         StartButton = createStyledButton("Start");
         HowToPlayButton = createStyledButton("How to play");
         ExitButton = createStyledButton("Exit");
-
-        // เทสเวลากดปุ่ม Start เปลี่ยนหน้าไว้เฉยๆ
-        StartButton.addActionListener(e -> {
-            new NewScreen();
-            dispose();
-        });
 
         // ปิดโปรแกรม
         ExitButton.addActionListener(e -> System.exit(0));
@@ -97,7 +95,7 @@ public class TowerGameMenu extends JFrame {
         background.add(HowToPlayButton);
         background.add(ExitButton);
         background.add(wind);
-
+    
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -111,6 +109,25 @@ public class TowerGameMenu extends JFrame {
 
     private JButton createStyledButton(String text) {
         return new Button(text);
+    }
+    
+    private void updateSunGifSize() {
+        int width = getWidth();
+        int height = getHeight();
+        // ปรับขนาด GIF 
+        int sunSize = Math.max(50, width / 5);  
+        int sunX = Math.max(100, width / 60);    
+        int sunY = Math.max(1, height / 80);  
+    
+        //โหลด GIF ใหม่
+        ImageIcon sunGif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
+        Image scaledGif = sunGif.getImage().getScaledInstance(sunSize, sunSize, Image.SCALE_DEFAULT);
+        
+        // อัปเดต GIF ใหม่
+        SunGifLabel.setIcon(new ImageIcon(scaledGif));
+        
+        // ตั้งค่าตำแหน่งของSunGifLabel
+        SunGifLabel.setBounds(sunX, sunY, sunSize, sunSize);
     }
 
     // ตำแหน่งปุ่ม GUI
@@ -126,13 +143,14 @@ public class TowerGameMenu extends JFrame {
         StartButton.setBounds(centerX, offsetY, buttonWidth, buttonHeight);
         HowToPlayButton.setBounds(centerX, offsetY + spacing + buttonHeight, buttonWidth, buttonHeight);
         ExitButton.setBounds(centerX, offsetY + 2 * (spacing + buttonHeight), buttonWidth, buttonHeight);
-
         // ขนาดตัวหนังสือ
         int fontSize = Math.max(20, buttonWidth / 10);
         Font buttonFont = new Font("Arial", Font.BOLD, fontSize);
         StartButton.setFont(buttonFont);
         HowToPlayButton.setFont(buttonFont);
         ExitButton.setFont(buttonFont);
+        // อัปเดตขนาดของ GIF
+        updateSunGifSize();
     }
 
     // สลับเสียง
@@ -145,6 +163,5 @@ public class TowerGameMenu extends JFrame {
             SoundButton.setIcon(soundOffIcon);
         }
         isMuted = !isMuted;
-
     }
 }
