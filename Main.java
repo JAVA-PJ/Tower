@@ -1,7 +1,8 @@
-import Source.App;
+import GUI.TowerGameMenu;
+import javax.swing.SwingUtilities;
 
 public class Main {
 	public static void main(String[] args) {
-		new App();
+		SwingUtilities.invokeLater(TowerGameMenu::new);
 	}
 }

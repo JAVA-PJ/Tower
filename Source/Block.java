@@ -14,13 +14,18 @@ public class Block {
 
 	// Block Movement
 	protected boolean falling = false;
-	private int speedX = 10;
-	private int speedY = 15;
+	private int speedX = 1;
+	private int speedY = 2;
 
 	// Block Image
     private Image blockImg;
 
-	public Block () {
+	public Block() {
+		blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
+	}
+
+	public Block (int posX) {
+		this.posX = posX;
 		blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
 	}
 

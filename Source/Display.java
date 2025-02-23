@@ -6,12 +6,16 @@ import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Display extends JPanel {
     // Game Panel
     private int numBlocks = 0;
+    private Timer gameLoop;
+    private boolean dieLock = false;
 
     // Block
     private Block newBlock;
@@ -22,7 +26,7 @@ public class Display extends JPanel {
     private ArrayList<Health> health;
 
     // Start Moving
-    private final int startMovingAt = 4;
+    private final int startMovingAt = 2;
 
     // Control background and block
     private int offsetY = 0;
@@ -30,7 +34,9 @@ public class Display extends JPanel {
 	// Image
     private Image bgImg;
 
-    public Display() {
+    // Constructor
+    public Display(Timer gameLoop) {
+        this.gameLoop = gameLoop;
         setPreferredSize(new Dimension(App.WIDTH, App.HEIGHT));
         health  = new ArrayList<>();
         for (int i = 1; i <= Health.maxHealth; i++)
@@ -51,17 +57,16 @@ public class Display extends JPanel {
 
     // Spawn a new block
     private void spawnBlock() {
-        if (numBlocks >= startMovingAt) {
+        if (numBlocks >= startMovingAt && dieLock == false) {
             int oldFirstBlockY = blocks.get(0).posY;
-            while (blocks.size() > 2)
+            int shiftAmount = oldFirstBlockY - blocks.get(1).posY;
+            while (blocks.size() > 3)
                 blocks.remove(0);
-
-            int shiftAmount = oldFirstBlockY - blocks.get(0).posY;
             for (Block block : blocks)
                 block.posY += shiftAmount;
             offsetY -= shiftAmount;
         }
-        newBlock = new Block();
+        newBlock = blocks.size() == 0 ? new Block() : new Block(new Random().nextInt(App.WIDTH - newBlock.Width));
         blocks.add(newBlock);
     }
     
@@ -72,8 +77,11 @@ public class Display extends JPanel {
 
         if (newBlock.falling) {
             newBlock.fall();
-            if (blocks.size() == 1 && newBlock.posY + newBlock.Height >= App.HEIGHT) {
+            if (blocks.size() == 1 && newBlock.posY + newBlock.Height >= 560) {
                 numBlocks++;
+                dieLock = false;
+                offsetY -= 280;
+                newBlock.posY += 280;
                 newBlock.falling = false;
                 spawnBlock();
                 return;
@@ -81,11 +89,13 @@ public class Display extends JPanel {
             if (newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
                 if (collideWithPreviousBlock()) {
                     numBlocks++;
+                    dieLock = false;
                     newBlock.falling = false;
                     spawnBlock();
                 } else if (blocks.size() > 1 && newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
                     health.get(healthIdx).setIsDie(true);
-                    health.get(healthIdx).curHealth--;
+                    Health.curHealth--;
+                    dieLock = true;
                     healthIdx--;
                     blocks.remove(newBlock);
                     spawnBlock();
@@ -116,7 +126,7 @@ public class Display extends JPanel {
         return (isColliding && !isTooWide);
     }
 
-    // Game loop
+    // Game loop to update and repaint the game
     public void gameLoop() {
         update();
         repaint();
@@ -124,7 +134,9 @@ public class Display extends JPanel {
 
     // Stop the game
     public void gameStop() {
-        System.exit(0);
+        blocks.remove(newBlock);
+        gameLoop.stop();
+       // System.exit(0);
     }
 
     @Override
@@ -137,7 +149,7 @@ public class Display extends JPanel {
 
         // Draw background, Block, Health
         int yOffset = offsetY;
-        float ratio = Math.min(1.0f, numBlocks / 100.0f);
+        float ratio = Math.min(1.0f, numBlocks * 2.5f / 100.0f);
         int red = (int)(135 * (1 - ratio));
         int green = (int)(206 * (1 - ratio));
         int blue = (int)(235 * (1 - ratio));

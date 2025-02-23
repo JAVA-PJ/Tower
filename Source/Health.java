@@ -27,9 +27,7 @@ public class Health {
 	public void setIsDie(boolean isDie) { this.isDie = isDie; }
 
 	public boolean checkIfDie() {
-		if (curHealth <= 0)
-			return (true);
-		return (false);
+		return (curHealth <= 0 ? true : false);
 	}
 
 	public void updateHealth(Graphics g) {

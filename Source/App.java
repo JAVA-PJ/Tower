@@ -9,22 +9,19 @@ public class App extends JFrame {
 	// Display
 	Display dp;
 
+	// Init App
 	public App() {
-		gameStart();
-	}
-
-	private void gameStart() {
 		setTitle("Tower Game");
 		setSize(WIDTH, HEIGHT);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		dp = new Display();
+		Timer gameLoop = new Timer(0, e -> dp.gameLoop());
+		dp = new Display(gameLoop);
 		add(dp);
 		pack();
 		setVisible(true);
 		
-		Timer gameLoop = new Timer(0, e -> dp.gameLoop());
         gameLoop.start();
 	}
 }
