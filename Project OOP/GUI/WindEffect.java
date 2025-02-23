@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.Random;
 public class WindEffect extends JPanel {
     private class WindStreak {
-        int x, y, length, speed;
-        float alpha;
-        WindStreak(int x, int y, int length, int speed, float alpha) {
+        int x,y,length,speed;
+        float fade;
+        WindStreak(int x, int y, int length, int speed, float fade) {
             this.x = x;
             this.y = y;
             this.length = length;
             this.speed = speed;
-            this.alpha = alpha;
+            this.fade = fade;
         }
     }
     private ArrayList<WindStreak> wind = new ArrayList<>();
@@ -47,20 +47,20 @@ public class WindEffect extends JPanel {
                 wind.x = -wind.length;
                 wind.y = rand.nextInt(getHeight()); 
                 wind.speed = 2 + rand.nextInt(4);
-                wind.alpha = 0.3f + rand.nextFloat() * 0.5f;
+                wind.fade = 0.3f + rand.nextFloat() * 0.5f;
             }
         }
     }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         for (WindStreak wind : wind) {
-            g2.setColor(new Color(255, 255, 255, (int) (wind.alpha * 255)));
-            g2.setStroke(new BasicStroke(2));
-            g2.drawLine(wind.x, wind.y, wind.x + wind.length, wind.y);
+            g2d.setColor(new Color(255, 255, 255, (int) (wind.fade * 255)));
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawLine(wind.x, wind.y, wind.x + wind.length, wind.y);
         }
     }
     public void updateWind(int width, int height) {
