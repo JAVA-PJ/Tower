@@ -2,30 +2,29 @@ package GUI;
 import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.URL;
-
 public class BackgroundMusic {
-    private Clip clip;
+    private Clip sound;
     private boolean isPlaying = false;
-    public BackgroundMusic(String fileName) {
+    public BackgroundMusic(String file) {
         try {
-            URL soundURL = getClass().getResource(fileName);
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundURL);
-            clip = AudioSystem.getClip();
-            clip.open(audioStream);
-            clip.loop(Clip.LOOP_CONTINUOUSLY); 
+            URL url = getClass().getResource(file);
+            AudioInputStream audio = AudioSystem.getAudioInputStream(url);
+            sound = AudioSystem.getClip();
+            sound.open(audio);
+            sound.loop(Clip.LOOP_CONTINUOUSLY); 
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
     }
     public void play() {
-        if (clip != null && !isPlaying) {
-            clip.start();
+        if (sound != null && !isPlaying) {
+            sound.start();
             isPlaying = true;
         }
     }
     public void stop() {
-        if (clip != null && isPlaying) {
-            clip.stop();
+        if (sound != null && isPlaying) {
+            sound.stop();
             isPlaying = false;
         }
     }
