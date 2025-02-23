@@ -90,11 +90,19 @@ public class TowerGameMenu extends JFrame {
         // ปิดโปรแกรม
         ExitButton.addActionListener(e -> System.exit(0));
 
-        // เพิ่มออบเจกต์ลงพื้นหลัง
+        // พิ่มออบเจกต์ลงพื้นหลัง
         background.add(StartButton);
         background.add(HowToPlayButton);
         background.add(ExitButton);
         background.add(wind);
+
+        //กดไปหน้า how to play
+        HowToPlayButton.addActionListener(e -> {
+            Music.stop();
+            this.setContentPane(new HowToPlay(this));
+            this.revalidate();
+            this.repaint();
+        });
     
         addComponentListener(new ComponentAdapter() {
             @Override
