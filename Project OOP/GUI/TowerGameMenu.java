@@ -57,7 +57,7 @@ public class TowerGameMenu extends JFrame {
         SoundButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                toggleSound(soundOn, soundOff);
+                Sound(soundOn, soundOff);
             }
         
             //เมื่อชี้เมาส์เข้าไป
@@ -118,51 +118,47 @@ public class TowerGameMenu extends JFrame {
     private JButton createStyledButton(String text) {
         return new Button(text);
     }
-    
     private void updateSunGifSize() {
         int width = getWidth();
         int height = getHeight();
-        // ปรับขนาด GIF 
+        //ปรับขนาด gif
         int sunSize = Math.max(50, width / 5);  
         int sunX = Math.max(100, width / 60);    
         int sunY = Math.max(1, height / 80);  
-    
-        //โหลด GIF ใหม่
-        ImageIcon sunGif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
-        Image scaledGif = sunGif.getImage().getScaledInstance(sunSize, sunSize, Image.SCALE_DEFAULT);
+        //โหลดgifใหม่
+        ImageIcon sungif = new ImageIcon(getClass().getResource("Asset/Sun4.gif"));
+        Image scalegif = sungif.getImage().getScaledInstance(sunSize, sunSize, Image.SCALE_DEFAULT);
         
-        // อัปเดต GIF ใหม่
-        SunGifLabel.setIcon(new ImageIcon(scaledGif));
+        //อัปเดตgifใหม่
+        SunGifLabel.setIcon(new ImageIcon(scalegif));
         
-        // ตั้งค่าตำแหน่งของSunGifLabel
+        //เซ็ทตำแหน่งของgif
         SunGifLabel.setBounds(sunX, sunY, sunSize, sunSize);
     }
-
-    // ตำแหน่งปุ่ม GUI
+    //ตำแหน่งปุ่ม GUI
     private void resizeComponents() {
         int width = getWidth();
         int height = getHeight();
-        int buttonWidth = width / 4;
-        int buttonHeight = height / 10;
-        int centerX = width / 2 - buttonWidth / 2;
-        int spacing = height / 20;
-        int offsetY = height / 4; //
+        int buttonW = width / 4;
+        int buttonH = height / 10;
+        int X = width / 2 - buttonW / 2;
+        int space = height / 20;
+        int Y = height / 4; 
 
-        StartButton.setBounds(centerX, offsetY, buttonWidth, buttonHeight);
-        HowToPlayButton.setBounds(centerX, offsetY + spacing + buttonHeight, buttonWidth, buttonHeight);
-        ExitButton.setBounds(centerX, offsetY + 2 * (spacing + buttonHeight), buttonWidth, buttonHeight);
-        // ขนาดตัวหนังสือ
-        int fontSize = Math.max(20, buttonWidth / 10);
+        StartButton.setBounds(X, Y, buttonW, buttonH);
+        HowToPlayButton.setBounds(X, Y + space + buttonH, buttonW, buttonH);
+        ExitButton.setBounds(X, Y + 2 * (space + buttonH), buttonW, buttonH);
+        //ขนาดตัวหนังสือ
+        int fontSize = Math.max(20, buttonW / 10);
         Font buttonFont = new Font("Arial", Font.BOLD, fontSize);
         StartButton.setFont(buttonFont);
         HowToPlayButton.setFont(buttonFont);
         ExitButton.setFont(buttonFont);
-        // อัปเดตขนาดของ GIF
+
         updateSunGifSize();
     }
-
     // สลับเสียง
-    private void toggleSound(ImageIcon soundOnIcon, ImageIcon soundOffIcon) {
+    private void Sound(ImageIcon soundOnIcon, ImageIcon soundOffIcon) {
         if (isMuted) {
             Music.play();
             SoundButton.setIcon(soundOnIcon);
