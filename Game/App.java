@@ -12,7 +12,6 @@ public class App extends JFrame {
 	public App() {
 		setTitle("Tower Game");
 		setSize(WIDTH, HEIGHT);
-		// setExtendedState(JFrame.MAXIMIZED_VERT);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

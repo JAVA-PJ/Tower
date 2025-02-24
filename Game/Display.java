@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -165,6 +166,7 @@ public class Display extends JPanel implements KeyListener{
         JButton replayButton;
         JButton exitButton;
 
+
         // Create Replay Button
         replayButton = new JButton();
         replayButton.setBounds(255, 450, 170, 90);
@@ -197,6 +199,7 @@ public class Display extends JPanel implements KeyListener{
         g.drawImage(gameOverImg, 0, 0, getWidth(), getHeight(), this);
         g.drawImage(replayButton, 255, 450, 170, 90, this);
         g.drawImage(exitButton, 255, 560, 170, 90, this);
+        score.drawGameOverScore(g, 230, 300);
 
         gameOver();
     }

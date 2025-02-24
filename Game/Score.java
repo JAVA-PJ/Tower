@@ -29,13 +29,26 @@ public class Score {
 
 	public void updateSocre() { score += 1; }
 
-	public void drawScore(Graphics g){
+	public void drawScore(Graphics g) {
 		int x = 10, y = 10;
 
 		if (scoreImg != null)
 			g.drawImage(scoreImg, x, y, null);
 		g.setColor(Color.white);
 		g.setFont(new Font("Arial", Font.BOLD, 30));
+
+		String scoreStr = String.valueOf(score);
+		int posX = x + 100;  // ตำแหน่งเริ่มต้นของตัวเลข
+
+		// วาดตัวเลขทีละหลัก
+		for (char c : scoreStr.toCharArray()) {
+			g.drawString(String.valueOf(c), posX, y + 37);  // วาดตัวเลขที่ตำแหน่ง
+			posX += 15;
+		}
+	}
+
+	public void drawGameOverScore(Graphics g, int x, int y) {
+		g.setFont(new Font("Arial", Font.BOLD, 50));
 
 		String scoreStr = String.valueOf(score);
 		int posX = x + 100;  // ตำแหน่งเริ่มต้นของตัวเลข

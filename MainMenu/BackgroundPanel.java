@@ -5,7 +5,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,6 +18,7 @@ public class BackgroundPanel extends JPanel {
 	protected boolean isHowToPlayScreen = false;
 
 	public BackgroundPanel(String imagePath, TowerGameMenu frame) {
+		this.frame = frame;
 		backgroundImage = new ImageIcon(getClass().getResource(imagePath)).getImage();
 		setLayout(null);
 	}
