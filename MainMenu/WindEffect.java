@@ -1,4 +1,4 @@
-package GUI;
+package MainMenu;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;

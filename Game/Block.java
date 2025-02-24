@@ -1,4 +1,4 @@
-package Source;
+package Game;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -14,8 +14,8 @@ public class Block {
 
 	// Block Movement
 	protected boolean falling = false;
-	private int speedX = 1;
-	private int speedY = 2;
+	private int speedX = 5;
+	private int speedY = 10;
 
 	// Block Image
     private Image blockImg;
@@ -42,7 +42,7 @@ public class Block {
 		posY += speedY;
 	}
 
-	public void draw(Graphics g) {
+	public void drawBlock(Graphics g) {
 		if (blockImg != null)
 			g.drawImage(blockImg, posX, posY, Width, Height, null);
 	}

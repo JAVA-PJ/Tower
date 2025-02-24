@@ -1,4 +1,4 @@
-package Source;
+package Game;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -25,6 +25,8 @@ public class Health {
 	}
 
 	public void setIsDie(boolean isDie) { this.isDie = isDie; }
+
+	public static void updateCurHealth() { curHealth -= 1; }
 
 	public boolean checkIfDie() {
 		return (curHealth <= 0 ? true : false);

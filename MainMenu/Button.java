@@ -1,4 +1,4 @@
-package GUI;
+package MainMenu;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -44,7 +44,7 @@ public class Button extends JButton {
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 40, 40);
 
-        //ขอบปุ่ม 
+        //ขอบปุ่ม
         g2.setColor(borderColor);
         g2.setStroke(new BasicStroke(5)); //กำหนดความหนาของเส้นขอบ
         g2.drawRoundRect(2, 2, getWidth() - 4, getHeight() - 4, 40, 40);

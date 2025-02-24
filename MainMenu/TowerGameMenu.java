@@ -1,5 +1,5 @@
-package GUI;
-import Source.*;
+package MainMenu;
+import Game.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -85,11 +85,11 @@ public class TowerGameMenu extends JFrame {
         HowToPlayButton = createStyledButton("How to play");
         ExitButton = createStyledButton("Exit");
 
-        // เทสเวลากดปุ่ม Start เปลี่ยนหน้าไว้เฉยๆ
+        // ปุ่ม Start เปลี่ยนหน้า
         StartButton.addActionListener(e -> {
-            new App();
             Music.stop();
             dispose();
+            new App();
         });
 
         // ปิดโปรแกรม

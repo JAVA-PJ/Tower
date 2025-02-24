@@ -1,27 +1,25 @@
-package Source;
+package Game;
 import javax.swing.JFrame;
-import javax.swing.Timer;
 public class App extends JFrame {
 	// Screen
-	protected static final int HEIGHT = 1000;
-	protected static final int WIDTH = 700;
+	public static final int HEIGHT = 1000;
+	public static final int WIDTH = 700;
 
 	// Display
-	Display dp;
+	Display panel;
 
 	// Init App
 	public App() {
 		setTitle("Tower Game");
 		setSize(WIDTH, HEIGHT);
+		// setExtendedState(JFrame.MAXIMIZED_VERT);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		Timer gameLoop = new Timer(0, e -> dp.gameLoop());
-		dp = new Display(gameLoop);
-		add(dp);
+		panel = new Display();
+		add(panel);
 		pack();
 		setVisible(true);
 		
-        gameLoop.start();
 	}
 }
