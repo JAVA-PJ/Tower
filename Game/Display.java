@@ -67,8 +67,6 @@ public class Display extends JPanel implements KeyListener{
                 if (curOffset >= -yOffset) {
                     gameLoop();
                 } else {
-                    if (!isSpawned)
-                        spawnBlock();
                     repaint();
                     for (Block block : blocks)
                         block.posY += 5;
@@ -103,8 +101,9 @@ public class Display extends JPanel implements KeyListener{
     // Update the game
     private void update() {
         if (blocks.size() != 1)
-            newBlock.
-            swing(App.WIDTH);
+            newBlock.swing(App.WIDTH);
+        if (isSpawned)
+            spawnBlock();
 
         if (newBlock.falling) {
             newBlock.fall();
