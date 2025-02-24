@@ -205,6 +205,7 @@ public class Display extends JPanel implements KeyListener{
     private void gameRestart() {
         // Remove all components
         this.removeAll();
+        
         // Revalidate the panel
         this.revalidate();
 
