@@ -15,9 +15,9 @@ import javax.swing.Timer;
 public class Display extends JPanel implements KeyListener{
      // Game Panel
     private Timer gameLoop;
-    private boolean isSpawned = true;
     private boolean dieLock = false;
     private boolean isPressed = false;
+    private final int animationSpeed = 5;
 
     // Block
     private Block newBlock;
@@ -69,8 +69,12 @@ public class Display extends JPanel implements KeyListener{
                 } else {
                     repaint();
                     for (Block block : blocks)
-                        block.posY += 5;
-                    curOffset += 5;
+                        block.posY += animationSpeed;
+                    curOffset += animationSpeed;
+                    if (curOffset >= -yOffset) {
+                        newBlock.posY = 50;
+                        newBlock.animation = true;
+                    }
                 }
         });
         gameLoop.start();
@@ -93,7 +97,6 @@ public class Display extends JPanel implements KeyListener{
             yOffset -= shiftAmount;
         }
 
-        isSpawned = false;
         newBlock = blocks.isEmpty() ? new Block() : new Block(new Random().nextInt(App.WIDTH - newBlock.Width));
         blocks.add(newBlock);
     }
@@ -102,8 +105,6 @@ public class Display extends JPanel implements KeyListener{
     private void update() {
         if (blocks.size() != 1)
             newBlock.swing(App.WIDTH);
-        if (isSpawned)
-            spawnBlock();
 
         if (newBlock.falling) {
             newBlock.fall();
@@ -114,7 +115,8 @@ public class Display extends JPanel implements KeyListener{
                 yOffset -= 280;
                 newBlock.falling = false;
                 score.updateSocre();
-                isSpawned = true;
+                spawnBlock();
+                newBlock.animation = false;
                 return ;
             }
 
@@ -124,15 +126,15 @@ public class Display extends JPanel implements KeyListener{
                     dieLock = false;
                     newBlock.falling = false;
                     score.updateSocre();
-                    isSpawned = true;
-
+                    spawnBlock();
+                    newBlock.animation = false;
                 } else if (blocks.size() > 1 && newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
                     health.get(healthIdx).setIsDie(true);
                     Health.updateCurHealth();
                     dieLock = true;
                     healthIdx--;
                     blocks.remove(newBlock);
-                    isSpawned = true;
+                    spawnBlock();
                 }
             }
         }

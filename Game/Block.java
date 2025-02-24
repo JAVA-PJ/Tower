@@ -9,13 +9,14 @@ public class Block {
 	protected final int Height = 140;
 
 	// Block Position
-	protected int posX = 260;
 	protected int posY = 50;
+	protected int posX = 260;
 
 	// Block Movement
-	protected boolean falling = false;
 	private int speedX = 5;
 	private int speedY = 10;
+	protected boolean falling = false;
+	protected boolean animation = true;
 
 	// Block Image
     private Image blockImg;
@@ -43,7 +44,7 @@ public class Block {
 	}
 
 	public void drawBlock(Graphics g) {
-		if (blockImg != null)
+		if (blockImg != null && animation)
 			g.drawImage(blockImg, posX, posY, Width, Height, null);
 	}
 }
