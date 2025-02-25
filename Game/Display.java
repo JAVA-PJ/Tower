@@ -2,14 +2,15 @@ package Game;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -44,6 +45,9 @@ public class Display extends JPanel implements KeyListener{
 
     // Score
     private Score score;
+    
+    // RandomEvent 
+    private RandomEvent randomEvent = new RandomEvent();
 
     // Constructor
     public Display() {
@@ -66,12 +70,17 @@ public class Display extends JPanel implements KeyListener{
 
         gameLoop = new Timer(16, e -> {
                 if (curOffset >= -yOffset) {
+                    update();
+                    randomEvent.checkSpawn(score.score);
+                    randomEvent.update();
                     gameLoop();
                 } else {
                     repaint();
                     for (Block block : blocks)
                         block.posY += animationSpeed;
                     curOffset += animationSpeed;
+                    randomEvent.checkSpawn(score.score);
+                    randomEvent.update();
                     if (curOffset >= -yOffset) {
                         newBlock.posY = 50;
                         newBlock.animation = true;
@@ -104,6 +113,9 @@ public class Display extends JPanel implements KeyListener{
     
     // Update the game
     private void update() {
+        randomEvent.checkSpawn(score.score);
+        randomEvent.update();
+
         if (blocks.size() != 1)
             newBlock.swing(App.WIDTH);
 
@@ -127,6 +139,7 @@ public class Display extends JPanel implements KeyListener{
                     dieLock = false;
                     newBlock.falling = false;
                     score.updateSocre();
+                    
                     spawnBlock();
                     newBlock.animation = false;
                 } else if (blocks.size() > 1 && newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
@@ -276,10 +289,16 @@ public class Display extends JPanel implements KeyListener{
             gameStop(g);
             return ;
         }
-
         // Mapping the background color
         mappingBackground();
         
+        Graphics2D g2d  =(Graphics2D) g.create();
+        g2d.setTransform(new AffineTransform()); 
+        randomEvent.drawEvent(g2d);
+        g2d.dispose();
+
+        
+
         // Draw Background, Block, Health, Score
         if (bgImg != null)
             g.drawImage(bgImg, 0, curOffset, getWidth(), bgImg.getHeight(null), this);
@@ -287,6 +306,9 @@ public class Display extends JPanel implements KeyListener{
             block.drawBlock(g);
         for (Health h : health)
             h.updateHealth(g);
+
         score.drawScore(g);
+
+        
     }
 }
