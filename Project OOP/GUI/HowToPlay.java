@@ -5,6 +5,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 public class HowToPlay extends JPanel {
     private Image backgroundImage;
     private JFrame frame;
@@ -20,11 +21,11 @@ public class HowToPlay extends JPanel {
         Image hoverImage = Icon.getImage().getScaledInstance(170, 80, Image.SCALE_SMOOTH); //Hover effect
         hoverIcon = new ImageIcon(hoverImage);
         backButton = new JLabel(backIcon);
-
         //ลูกเล่นเกี่ยวกับเมาส์
         backButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Button.ClickSound();
                 frame.dispose();
                 new TowerGameMenu();
             }
@@ -37,7 +38,8 @@ public class HowToPlay extends JPanel {
                 backButton.setIcon(backIcon); 
             }
         });
-        add(backButton); // เพิ่มปุ่มลง
+        add(backButton); 
+
         frame.addComponentListener(new ComponentAdapter() {    //ปรับขนาดปุ่มตามขนาดหน้าจอ
             @Override
             public void componentResized(ComponentEvent e) {
@@ -46,7 +48,8 @@ public class HowToPlay extends JPanel {
         });
         updateBackButtonPosition();
     }
-    //คำนวณขนาดปุ่มให้เหมาะสมกับหน้าจอ กับ ตำแหน่งของปุ่ม
+    
+    //คำนวณขนาดปุ่มให้เหมาะสมกับหน้าจอ
     private void updateBackButtonPosition() {
         int fWidth = frame.getWidth();
         int fHeight = frame.getHeight();
@@ -56,7 +59,8 @@ public class HowToPlay extends JPanel {
         int y = 30; 
     backButton.setBounds(x, y, Width, Height);
     }
-    //วาดพื้นหลัง
+
+    //พื้นหลัง
     @Override
     protected void paintComponent(Graphics g) {
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); 
