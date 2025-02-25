@@ -15,19 +15,15 @@ public class RandomEvent {
     private final int eventWidth = 240;  
     private final int eventHeight = 120;
     
-    private final long eventInterval = 20000;      
+    private final long eventInterval = 15000;      
     private final long eventDisplayDuration = 10000; 
     
     private final long fadeInDuration = 2000;
     private long lastSpawnTime = 0;
-    
+    private Image balloonImg;
     private Random rand;
-    
-    // Flags สำหรับตรวจสอบว่าพระจันทร์หรือดาวถูก spawn แล้วหรือไม่
     private boolean moonSpawned = false;
     private boolean starSpawned = false;
-    
-    // inner class สำหรับเก็บข้อมูลของ event (ก้อนเมฆ, พระจันทร์, หรือดาว)
     private class Cloud {
         int x, y;
         long spawnTime;
@@ -36,9 +32,9 @@ public class RandomEvent {
         int baseY;     // ตำแหน่งแกน Y คงที่
         Image img;
         float alpha = 1.0f;  // สำหรับเอฟเฟค fade-in (0.0 - 1.0)
+		boolean isBalloon = false;
     }
     
-    // สร้างอาร์เรย์สำหรับ event 5 อัน (สำหรับก้อนเมฆหรือพระจันทร์/ดาว)
     private Cloud[] clouds = new Cloud[5];
     
     public RandomEvent() {
@@ -52,6 +48,7 @@ public class RandomEvent {
             starImgs[0] = ImageIO.read(new File("Assets/dsa (1).png"));
             starImgs[1] = ImageIO.read(new File("Assets/dsa (2).png"));
             starImgs[2] = ImageIO.read(new File("Assets/dsa (4).png"));
+			balloonImg = ImageIO.read(new File("Assets/f2.png"));
         } catch (IOException e) {
             System.out.println("Error loading event images: " + e.getMessage());
         }
@@ -64,52 +61,47 @@ public class RandomEvent {
     
 	public void checkSpawn(int score) {
 		long now = System.currentTimeMillis();
-		
-		// ตรวจสอบว่าก้อนเมฆทั้งหมดทำงานเสร็จหรือยัง
-		boolean allCloudsDone = true;
+		boolean anyVisible = false;
 		for (Cloud c : clouds) {
-			if (c.visible) { // ถ้ามีก้อนเมฆที่ยังมองเห็นอยู่ ให้รอ
-				allCloudsDone = false;
+			if (c.visible) {
+				anyVisible = true;
 				break;
 			}
 		}
-		
-		// กรณีคะแนน >= 25 ให้ spawn ดาว (หากยังไม่ถูก spawn)
+
 		if (score >= 25) {
 			if (!starSpawned) {
 				spawnStars();
 				starSpawned = true;
 			}
-		} 
-		// กรณีคะแนน >= 20 ให้ spawn พระจันทร์ แต่ต้องรอให้ก้อนเมฆเคลื่อนที่เสร็จก่อน
+		}
+
 		else if (score >= 20) {
-			if (!moonSpawned && allCloudsDone) { // รอให้ก้อนเมฆออกจากจอก่อน
-				spawnMoon();
-				moonSpawned = true;
-			}
-		} 
-		// สำหรับคะแนนต่ำกว่า 20 ให้ spawn ก้อนเมฆตามปกติ
-		else {
-			// Reset flags ถ้าคะแนนลดลงต่ำกว่า 20
-			moonSpawned = false;
-			starSpawned = false;
-	
-			boolean anyVisible = false;
+			boolean allCloudsDone = true;
 			for (Cloud c : clouds) {
-				if (c.visible) {
-					anyVisible = true;
+				if (c.visible && (c.direction == 1 || c.direction == -1)) {
+					allCloudsDone = false;
 					break;
 				}
 			}
-	
-			// ถ้าไม่มีเมฆปรากฏ และเวลาถึงกำหนด ให้ spawn ใหม่
-			if (!anyVisible && (now - lastSpawnTime >= eventInterval)) {
+			if (!moonSpawned && allCloudsDone) {
+				spawnMoon();
+				moonSpawned = true;
+			}
+		}
+
+		else {
+			moonSpawned = false;
+			starSpawned = false;
+			if (score >= 10 && score < 20 && !anyVisible) {
+				spawnBalloon();
+			}
+			else if (!anyVisible && (now - lastSpawnTime >= eventInterval)) {
 				spawnClouds();
 			}
 		}
 	}
-    
-    // Spawn ก้อนเมฆ 5 อัน โดยกำหนดตำแหน่งและทิศทางตาม index
+
     private void spawnClouds() {
         Image[] cloudImages = { cloud1Img, cloud2Img, cloud3Img };
         for (int i = 0; i < 5; i++) {
@@ -119,7 +111,7 @@ public class RandomEvent {
             if (c.direction == 1) {
                 c.x = -eventWidth;
             } else {
-                c.x = App.WIDTH + eventWidth;  // App.WIDTH = 700
+                c.x = App.WIDTH + eventWidth; 
             }
             c.baseY = 200 + i * 100 + rand.nextInt(50);
             c.y = c.baseY;
@@ -146,6 +138,22 @@ public class RandomEvent {
         }
         lastSpawnTime = System.currentTimeMillis();
     }
+	private void spawnBalloon(){
+		Cloud c = clouds[0];
+		c.visible = true;
+		c.isBalloon = true; 
+		c.direction = 2; 
+		c.img = balloonImg;
+		
+		c.x = rand.nextInt(App.WIDTH - eventWidth);
+		c.y = App.HEIGHT + eventHeight;
+		c.baseY = c.y; 
+		
+		c.spawnTime = System.currentTimeMillis();
+		c.alpha = 1.0f; 
+		lastSpawnTime = System.currentTimeMillis();
+
+	}
     
 private void spawnStars() {
     // กำหนดตำแหน่ง X สำหรับดาว 3 รูปตามที่คุณต้องการ
@@ -170,37 +178,45 @@ private void spawnStars() {
     }
     lastSpawnTime = System.currentTimeMillis();
 }
-    
-    // อัปเดตตำแหน่งของ event แต่ละอัน
     public void update() {
-		double totalDistance = App.WIDTH + 2 * eventWidth; // 700 + 480 = 1180
-		double speedPerMs = totalDistance / (double) eventDisplayDuration;
-		long currentTime = System.currentTimeMillis();
+			long currentTime = System.currentTimeMillis();
+			for (int i = 0; i < 5; i++) {
+				Cloud c = clouds[i];
+				if (c.visible) {
+					long elapsed = currentTime - c.spawnTime;
 		
-		for (int i = 0; i < 5; i++) {
-			Cloud c = clouds[i];
-			if (c.visible) {
-				long elapsed = currentTime - c.spawnTime;
-				if (c.direction == 1) {
-					c.x = (int)(-eventWidth + speedPerMs * elapsed);
-				} else if (c.direction == -1) {
-					c.x = (int)((App.WIDTH + eventWidth) - speedPerMs * elapsed);
-				} else {
-					// สำหรับ event แบบคงที่ (พระจันทร์หรือดาว)
-					float newAlpha = Math.min(1.0f, (float) elapsed / (float) fadeInDuration);
-					c.alpha = newAlpha;
-					// ให้คงตำแหน่ง y ไว้ตามค่า baseY (ซึ่งตั้งไว้ตอน spawn)
-					c.y = c.baseY;
-				}
-				if (c.direction != 0 && elapsed >= eventDisplayDuration) {
-					c.visible = false;
+					// ถ้าเป็นเมฆ (direction = 1 หรือ -1)
+					if (c.direction == 1 || c.direction == -1) {
+						double totalDistHorizontal = App.WIDTH + 2 * eventWidth; 
+						double speedPerMs = totalDistHorizontal / (double) eventDisplayDuration;
+						if (c.direction == 1) {
+							c.x = (int)(-eventWidth + speedPerMs * elapsed);
+						} else {
+							c.x = (int)((App.WIDTH + eventWidth) - speedPerMs * elapsed);
+						}
+					}
+					// ถ้าเป็นบอลลูน (direction = 2)
+					else if (c.direction == 2) {
+						// ระยะทางรวมในแนวตั้ง
+						double totalDistVertical = App.HEIGHT + 2 * eventHeight; 
+						double speedPerMs = totalDistVertical / (double) eventDisplayDuration;
+						// คำนวณ y จากล่างขึ้นบน
+						c.y = (int)((App.HEIGHT + eventHeight) - (speedPerMs * elapsed));
+					}
+					else {
+						float newAlpha = Math.min(1.0f, (float) elapsed / (float) fadeInDuration);
+						c.alpha = newAlpha;
+						c.y = c.baseY;
+					}
+		
+					if ((c.direction == 1 || c.direction == -1 || c.direction == 2)
+					   && elapsed >= eventDisplayDuration) {
+						c.visible = false;
+					}
 				}
 			}
 		}
-	}
 	
-    
-    // วาด event ที่แสดงอยู่ โดยใช้ alpha สำหรับ fade-in
     public void drawEvent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         for (int i = 0; i < 5; i++) {
