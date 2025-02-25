@@ -1,15 +1,17 @@
 package Game;
+import Enum.ImageType;
+import Enum.SoundType;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -18,7 +20,11 @@ public class Display extends JPanel implements KeyListener{
     private Timer gameLoop;
     private boolean dieLock = false;
     private boolean isPressed = false;
+    private boolean tutorial = true;
     private final int animationSpeed = 5;
+
+    // Game Over Screen
+    private GameOverScreen gameOver;
 
     // Block
     private Block newBlock;
@@ -35,24 +41,22 @@ public class Display extends JPanel implements KeyListener{
     private int yOffset = 0;
     private int curOffset = 0;
     private int numBlocks = 0;
+    private double startPosition = App.HEIGHT * (560f / 1000f);
 
 	// Image
     private Image bgImg;
-    private Image exitButton;
-    private Image gameOverImg;
-    private Image replayButton;
+    private Image spaceBar;
 
     // Score
-    private Score score;
+    protected Score score;
 
     // Constructor
     public Display() {
-        exitButton = new ImageIcon(getClass().getResource("../Assets/exit.png")).getImage();
-        bgImg = new ImageIcon(getClass().getResource("../Assets/background.png")).getImage();
-        replayButton = new ImageIcon(getClass().getResource("../Assets/replay.png")).getImage();
-        gameOverImg = new ImageIcon(getClass().getResource("../Assets/gameover.png")).getImage();
+        bgImg = new ImageIcon(getClass().getResource(ImageType.BG_GAME.getPath())).getImage();
+        spaceBar = new ImageIcon(getClass().getResource(ImageType.SPACEBAR.getPath())).getImage();
         
         score = new Score();
+        gameOver = new GameOverScreen(this);
         blocks = new ArrayList<>();
         health  = new ArrayList<>();
         
@@ -93,7 +97,7 @@ public class Display extends JPanel implements KeyListener{
             int oldFirstBlockY = blocks.get(0).posY;
             int shiftAmount = oldFirstBlockY - blocks.get(1).posY;
 
-            while (blocks.size() > 3)
+            while (blocks.size() > 4)
                 blocks.remove(0);
             yOffset -= shiftAmount;
         }
@@ -109,8 +113,8 @@ public class Display extends JPanel implements KeyListener{
 
         if (newBlock.falling) {
             newBlock.fall();
-            
-            if (blocks.size() == 1 && newBlock.posY + newBlock.Height >= 560) {
+
+            if (blocks.size() == 1 && newBlock.posY + newBlock.Height >= startPosition) {
                 numBlocks++;
                 dieLock = false;
                 yOffset -= 280;
@@ -118,6 +122,7 @@ public class Display extends JPanel implements KeyListener{
                 score.updateSocre();
                 spawnBlock();
                 newBlock.animation = false;
+                Sound.playSound(SoundType.DROP);
                 return ;
             }
 
@@ -129,6 +134,7 @@ public class Display extends JPanel implements KeyListener{
                     score.updateSocre();
                     spawnBlock();
                     newBlock.animation = false;
+                    Sound.playSound(SoundType.DROP);
                 } else if (blocks.size() > 1 && newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
                     health.get(healthIdx).setIsDie(true);
                     Health.updateCurHealth();
@@ -161,58 +167,27 @@ public class Display extends JPanel implements KeyListener{
         return (isColliding && !isTooWide);
     }
 
-    // Game Over Control
-    private void gameOver() {
-        JButton replayButton;
-        JButton exitButton;
+    private void mappingBackground(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
 
+        // ไล่สีฟ้าจากฟ้าอ่อน → ฟ้าเข้ม
+        Color skyTop = new Color(135, 206, 250);  // ฟ้าอ่อน
+        Color skyBottom = new Color(70, 130, 180); // ฟ้าเข้ม
 
-        // Create Replay Button
-        replayButton = new JButton();
-        replayButton.setBounds(255, 450, 170, 90);
-        replayButton.setBorderPainted(false);
-        replayButton.setFocusPainted(false);
-        replayButton.setContentAreaFilled(false);
-        add(replayButton);
+        // คำนวณระดับสีตามความสูง
+        float ratio = Math.min(1.0f, numBlocks * 1.5f / 100.0f);
+        int red = (int) (skyTop.getRed() * (1 - ratio) + skyBottom.getRed() * ratio);
+        int green = (int) (skyTop.getGreen() * (1 - ratio) + skyBottom.getGreen() * ratio);
+        int blue = (int) (skyTop.getBlue() * (1 - ratio) + skyBottom.getBlue() * ratio);
+        Color dynamicSky = new Color(red, green, blue);
 
-        // Create Exit Button
-        exitButton = new JButton();
-        exitButton.setBounds(255, 560, 170, 90);
-        exitButton.setBorderPainted(false);
-        exitButton.setFocusPainted(false);
-        exitButton.setContentAreaFilled(false);
-        add(exitButton);
-
-        // Press Replay Button → Start a new game
-        replayButton.addActionListener(e -> gameRestart());
-
-        // Press Exit Button → Exit the game
-        exitButton.addActionListener(e -> System.exit(0));
+        // ใช้ Gradient ไล่สีจากด้านบนลงล่าง
+        GradientPaint gradient = new GradientPaint(0, 0, dynamicSky, 0, getHeight(), skyBottom);
+        g2d.setPaint(gradient);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
     }
 
-    // Stop the game
-    private void gameStop(Graphics g) {
-        // Stop loop game
-        gameLoop.stop();
-
-        // Draw Game Over Frame
-        g.drawImage(gameOverImg, 0, 0, getWidth(), getHeight(), this);
-        g.drawImage(replayButton, 255, 450, 170, 90, this);
-        g.drawImage(exitButton, 255, 560, 170, 90, this);
-        score.drawGameOverScore(g, 230, 300);
-
-        gameOver();
-    }
-
-    // Restart the game
-    private void gameRestart() {
-        // Remove all components
-        this.removeAll();
-        
-        // Revalidate the panel
-        this.revalidate();
-
-        // Reset the game
+    public void setNewGame() {
         blocks.clear();
         score = new Score();
 
@@ -220,29 +195,13 @@ public class Display extends JPanel implements KeyListener{
         curOffset = 0;
         numBlocks = 0;
         dieLock = false;
+        tutorial = true;
         healthIdx = Health.maxHealth - 1;
         Health.curHealth = Health.maxHealth;
 
         for (Health h : health)
             h.setIsDie(false);
         spawnBlock();
-        
-        // Add key listener
-        this.requestFocus();
-        this.setFocusable(true);
-        this.addKeyListener(this);
-        
-        // Start the game loop
-        gameLoop.start();
-    }
-
-    public void mappingBackground() {
-        float ratio = Math.min(1.0f, numBlocks * 2.5f / 100.0f);
-        int red = (int)(135 * (1 - ratio));
-        int green = (int)(206 * (1 - ratio));
-        int blue = (int)(235 * (1 - ratio));
-
-        setBackground(new Color(red, green, blue));
     }
 
     // Key Listener
@@ -260,6 +219,7 @@ public class Display extends JPanel implements KeyListener{
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE)
             isPressed = false;
+            tutorial = false;
     }
 
     // Key Listener
@@ -273,16 +233,18 @@ public class Display extends JPanel implements KeyListener{
 
         // Check if health less than 0 then stop the game
         if (Health.curHealth <= 0) {
-            gameStop(g);
+            gameOver.gameStop(g, gameLoop);
             return ;
         }
 
         // Mapping the background color
-        mappingBackground();
+        mappingBackground(g);
         
         // Draw Background, Block, Health, Score
         if (bgImg != null)
-            g.drawImage(bgImg, 0, curOffset, getWidth(), bgImg.getHeight(null), this);
+            g.drawImage(bgImg, 0, curOffset, getWidth(), getHeight(), this);
+        if (blocks.size() == 1 && tutorial)
+            g.drawImage(spaceBar, 225, 250, 250, 100, this);
         for (Block block : blocks)
             block.drawBlock(g);
         for (Health h : health)

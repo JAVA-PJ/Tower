@@ -1,4 +1,5 @@
 package Game;
+import Enum.ImageType;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
@@ -22,12 +23,12 @@ public class Block {
     private Image blockImg;
 
 	public Block() {
-		blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
+		blockImg = new ImageIcon(getClass().getResource(ImageType.BLOCK.getPath())).getImage();
 	}
 
 	public Block (int posX) {
+		this();
 		this.posX = posX;
-		blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
 	}
 
 	public void swing(int screenWidth) {

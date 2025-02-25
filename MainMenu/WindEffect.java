@@ -28,7 +28,7 @@ public class WindEffect extends JPanel {
         timer.start();
     }
     private void generateWind(int width, int height) {
-        wind.clear();
+        wind.clear(); 
         for (int i = 0; i < 20; i++) {
             wind.add(new WindStreak(
                 rand.nextInt(width),
