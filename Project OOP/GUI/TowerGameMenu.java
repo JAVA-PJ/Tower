@@ -5,24 +5,23 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-public class TowerGameMenu extends JFrame {
-    private JButton StartButton, HowToPlayButton,ExitButton;
+public class TowerGameMenu extends JFrame  {
+    private Button StartButton, HowToPlayButton,ExitButton;
     private JLabel SoundButton,SungifLabel;
     private BackgroundMusic Music;
     private boolean isMuted = false;
+    private Image backgroundImage;
 
     class Background extends JPanel {
-        private Image backgroundImage;
-
         public Background(String imagePath) {
             backgroundImage = new ImageIcon(getClass().getResource(imagePath)).getImage();
         }
-
         @Override
         protected void paintComponent(Graphics g) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
+    
     public TowerGameMenu() {
         setTitle("Tower Game");
         setSize(1080, 600);
@@ -57,51 +56,64 @@ public class TowerGameMenu extends JFrame {
         SoundButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Button.ClickSound();
                 Sound(soundOn, soundOff);
             }
-        
-            //เมื่อชี้เมาส์เข้าไป
             @Override
             public void mouseEntered(MouseEvent e) {
                 SoundButton.setBorder(BorderFactory.createLineBorder(new Color(255, 255, 255, 150), 2));
             }
-
-            //เมื่อเอาเมาส์ออกมา
             @Override
             public void mouseExited(MouseEvent e) {
                 SoundButton.setBorder(null);
             }
         });
-
         background.add(SoundButton);
 
-        // ลมม
+        //ลม
         WindEffect wind = new WindEffect(getWidth(), getHeight());
         wind.setBounds(0, 0, getWidth(), getHeight());
         background.add(wind);
   
+        //ปุ่ม3ปุ่ม
+        ImageIcon startIcon = new ImageIcon(getClass().getResource("Asset/StartButton.png"));
+        ImageIcon howToPlayIcon = new ImageIcon(getClass().getResource("Asset/HowToPlayButton.png"));
+        ImageIcon exitIcon = new ImageIcon(getClass().getResource("Asset/ExitButton.png"));
 
-        // ปุ่มหลักสามปุ่ม
-        StartButton = createStyledButton("Start");
-        HowToPlayButton = createStyledButton("How to play");
-        ExitButton = createStyledButton("Exit");
+        StartButton = new Button(startIcon);
+        HowToPlayButton = new Button(howToPlayIcon);
+        ExitButton = new Button(exitIcon);
 
-        // ปิดโปรแกรม
-        ExitButton.addActionListener(e -> System.exit(0));
+        StartButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
 
-        // พิ่มออบเจกต์ลงพื้นหลัง
+
+                
+            }
+        });
+
+        HowToPlayButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Music.stop();
+                setContentPane(new HowToPlay(TowerGameMenu.this));
+                revalidate();
+            }
+        });
+
+        ExitButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.exit(0);
+            }
+        });
+
+        //เพิ่มออบเจกต์ลงพื้นหลัง
         background.add(StartButton);
         background.add(HowToPlayButton);
         background.add(ExitButton);
         background.add(wind);
-
-        //กดไปหน้า how to play
-        HowToPlayButton.addActionListener(e -> {
-            Music.stop();
-            this.setContentPane(new HowToPlay(this));
-            this.revalidate();
-            this.repaint();
-        });
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -110,12 +122,9 @@ public class TowerGameMenu extends JFrame {
                 wind.setBounds(0, 0, getWidth(), getHeight());
             }
         });
-        resizeComponents();
         setVisible(true);
     }
-    private JButton createStyledButton(String text) {
-        return new Button(text);
-    }
+
     private void updateSunGifSize() {
         int width = getWidth();
         int height = getHeight();
@@ -131,6 +140,7 @@ public class TowerGameMenu extends JFrame {
         //เซ็ทตำแหน่งของgif
         SungifLabel.setBounds(sunX, sunY, sunSize, sunSize);
     }
+    
     //ตำแหน่งปุ่ม GUI
     private void resizeComponents() {
         int width = getWidth();
@@ -143,15 +153,23 @@ public class TowerGameMenu extends JFrame {
         StartButton.setBounds(X, Y, buttonW, buttonH);
         HowToPlayButton.setBounds(X, Y + space + buttonH, buttonW, buttonH);
         ExitButton.setBounds(X, Y + 2 * (space + buttonH), buttonW, buttonH);
-        //ขนาดตัวหนังสือ
-        int fontSize = Math.max(20, buttonW / 10);
-        Font buttonFont = new Font("Arial", Font.BOLD, fontSize);
-        StartButton.setFont(buttonFont);
-        HowToPlayButton.setFont(buttonFont);
-        ExitButton.setFont(buttonFont);
-
+        
+        //ขนาดรูปปุ่ม
+        ImageIcon startIcon = new ImageIcon(getClass().getResource("Asset/StartButton.png"));
+        Image scaleStart = startIcon.getImage().getScaledInstance(buttonW, buttonH, Image.SCALE_SMOOTH);
+        StartButton.setIcon(new ImageIcon(scaleStart));
+        
+        ImageIcon howToPlayIcon = new ImageIcon(getClass().getResource("Asset/HowToPlayButton.png"));
+        Image scalehowtoplay= howToPlayIcon.getImage().getScaledInstance(buttonW, buttonH, Image.SCALE_SMOOTH);
+        HowToPlayButton.setIcon(new ImageIcon(scalehowtoplay));
+        
+        ImageIcon exitIcon = new ImageIcon(getClass().getResource("Asset/ExitButton.png"));
+        Image scaleExist = exitIcon.getImage().getScaledInstance(buttonW, buttonH, Image.SCALE_SMOOTH);
+        ExitButton.setIcon(new ImageIcon(scaleExist));
+        
         updateSunGifSize();
     }
+
     // สลับเสียง
     private void Sound(ImageIcon soundOnIcon, ImageIcon soundOffIcon) {
         if (isMuted) {
@@ -164,3 +182,5 @@ public class TowerGameMenu extends JFrame {
         isMuted = !isMuted;
     }
 }
+
+
