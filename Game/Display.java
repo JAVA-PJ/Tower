@@ -25,6 +25,9 @@ public class Display extends JPanel implements KeyListener {
     private ArrayList<Block> blocks;
     private Block failingBlock; // เก็บบล็อกที่ล้มเหลว
 
+    // คลาสใหม่สำหรับจัดการฟิสิกส์การตก
+    private FallingBlockPhysics fallingPhysics;
+
     // Health
     private ArrayList<Health> health;
     private int healthIdx = Health.maxHealth - 1;
@@ -42,20 +45,9 @@ public class Display extends JPanel implements KeyListener {
     private Image exitButton;
     private Image gameOverImg;
     private Image replayButton;
-
+    private Image blockImg;
     // Score
     private Score score;
-
-    // Gif
-    private Image failleft;
-    private Image failright;
-    private Image failstraight; // เพิ่ม GIF สำหรับการตกแนวดิ่ง
-    private boolean isFailing = false;
-    private boolean isfailleft = false;
-    private boolean isfailstraight = false; // เพิ่มตัวแปรสำหรับตรวจสอบการตกแนวดิ่ง
-    private int failtimer = 0;
-    private int failduration = 30;
-    private boolean gifPlayed = false; // เพิ่มตัวแปรเพื่อตรวจสอบว่า GIF เล่นแล้วหรือยัง
 
     // Constructor
     public Display() {
@@ -63,12 +55,7 @@ public class Display extends JPanel implements KeyListener {
         bgImg = new ImageIcon(getClass().getResource("../Assets/background.png")).getImage();
         replayButton = new ImageIcon(getClass().getResource("../Assets/replay.png")).getImage();
         gameOverImg = new ImageIcon(getClass().getResource("../Assets/gameover.png")).getImage();
-
-        // gif
-        failleft = new ImageIcon(getClass().getResource("../Assets/FailLeft.gif")).getImage();
-        failright = new ImageIcon(getClass().getResource("../Assets/FailRight.gif")).getImage();
-        failstraight = new ImageIcon(getClass().getResource("../Assets/Faildown.gif")).getImage(); // โหลด GIF ใหม่
-
+        blockImg = new ImageIcon(getClass().getResource("../Assets/block.png")).getImage();
         score = new Score();
         blocks = new ArrayList<>();
         health = new ArrayList<>();
@@ -97,7 +84,6 @@ public class Display extends JPanel implements KeyListener {
         });
         gameLoop.start();
     }
-
     // Game loop to update and repaint the game
     private void gameLoop() {
         update();
@@ -116,24 +102,22 @@ public class Display extends JPanel implements KeyListener {
         }
 
         newBlock = blocks.isEmpty() ? new Block() : new Block(new Random().nextInt(App.WIDTH - newBlock.Width));
+        newBlock.setImage(blockImg); // กำหนดภาพให้กับบล็อกใหม่
         blocks.add(newBlock);
     }
 
     // Update the game
     private void update() {
-        if (isFailing) {
-            failtimer++;
-
-            // ถ้า timer ถึงครึ่งหนึ่งของระยะเวลา animation ให้ถือว่า GIF ได้เล่นแล้ว
-            if (failtimer >= failduration / 2) {
-                gifPlayed = true;
-            }
-
-            if (failtimer >= failduration) {
-                isFailing = false;
-                gifPlayed = false; // รีเซ็ตสถานะ GIF เมื่อจบ animation
+        // ถ้ากำลังจำลองการตกด้วยฟิสิกส์
+        if (fallingPhysics != null) {
+            fallingPhysics.update();
+            
+            // ถ้าบล็อกออกนอกหน้าจอ
+            if (fallingPhysics.isOutOfBounds()) {
                 blocks.remove(failingBlock);
                 failingBlock = null;
+                fallingPhysics = null;
+                
                 if (!blocks.contains(newBlock)) {
                     spawnBlock();
                 }
@@ -170,22 +154,19 @@ public class Display extends JPanel implements KeyListener {
                     failingBlock = newBlock;
                     Block prevBlock = blocks.get(blocks.size() - 2);
 
-                    // เช็คว่าบล็อกตกแนวดิ่งโดยไม่มีการชนกันเลยหรือไม่
-                    // เช็คว่าบล็อกตกแนวดิ่งโดยไม่มีการชนกันเลยหรือไม่
+                    // กำหนดทิศทางการตก
+                    int fallDirection;
                     if (isCompletelyMissed(newBlock, prevBlock)) {
-                        isfailstraight = true;
-                        isfailleft = false;
+                        fallDirection = 0; // ตกตรง
                     } else if (newBlock.posX + (newBlock.Width / 2) < prevBlock.posX + (prevBlock.Width / 2)) {
-                        isfailleft = true;
-                        isfailstraight = false;
+                        fallDirection = -1; // ตกซ้าย
                     } else {
-                        isfailleft = false;
-                        isfailstraight = false;
+                        fallDirection = 1; // ตกขวา
                     }
 
-                    isFailing = true;
-                    failtimer = 0;
-                    gifPlayed = false; // รีเซ็ตสถานะ GIF เมื่อเริ่ม animation ใหม่
+                    // สร้าง physics engine สำหรับบล็อกที่กำลังตก
+                    fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
+                    
                     health.get(healthIdx).setIsDie(true);
                     Health.updateCurHealth();
                     dieLock = true;
@@ -195,7 +176,7 @@ public class Display extends JPanel implements KeyListener {
         }
     }
 
-    // ฟังก์ชันใหม่เพื่อตรวจสอบว่าบล็อกไม่ชนกันเลย (ไม่มีส่วนที่ซ้อนทับกัน)
+    // ฟังก์ชันตรวจสอบว่าบล็อกไม่ชนกันเลย (ไม่มีส่วนที่ซ้อนทับกัน)
     private boolean isCompletelyMissed(Block currentBlock, Block prevBlock) {
         return (currentBlock.posX >= prevBlock.posX + prevBlock.Width) ||
                 (currentBlock.posX + currentBlock.Width <= prevBlock.posX);
@@ -280,12 +261,8 @@ public class Display extends JPanel implements KeyListener {
         healthIdx = Health.maxHealth - 1;
         Health.curHealth = Health.maxHealth;
         
-        // Reset all animation-related variables
-        gifPlayed = false; 
-        isFailing = false;
-        isfailleft = false;
-        isfailstraight = false;
-        failtimer = 0;
+        // Reset physics
+        fallingPhysics = null;
         failingBlock = null;
     
         for (Health h : health)
@@ -313,7 +290,7 @@ public class Display extends JPanel implements KeyListener {
     // Key Listener
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.falling && !isFailing) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.falling && fallingPhysics == null) {
             if (Health.curHealth > 0 && !isPressed)
                 newBlock.fall();
             isPressed = true;
@@ -336,7 +313,7 @@ public class Display extends JPanel implements KeyListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        ;
+        
         // Check if health less than 0 then stop the game
         if (Health.curHealth <= 0) {
             gameStop(g);
@@ -347,32 +324,22 @@ public class Display extends JPanel implements KeyListener {
         // Draw Background
         if (bgImg != null)
             g.drawImage(bgImg, 0, curOffset, getWidth(), bgImg.getHeight(null), this);
-        // วาดบล็อก
+        
+        // วาดบล็อกปกติ
         for (Block block : blocks) {
-            if (isFailing && block == failingBlock) {
-                continue;
+            if (block == failingBlock && fallingPhysics != null) {
+                continue; // ข้ามการวาดบล็อกที่กำลังตกด้วยฟิสิกส์ (จะวาดแยก)
             }
             block.drawBlock(g);
         }
+        
+        // วาดบล็อกที่กำลังตกด้วยฟิสิกส์
+        if (fallingPhysics != null) {
+            fallingPhysics.draw(g);
+        }
+        
         for (Health h : health)
             h.updateHealth(g);
         score.drawScore(g);
-
-        // วาด GIF เฉพาะเมื่อยังไม่ได้เล่น
-        if (isFailing && failingBlock != null && !gifPlayed) {
-            int gifWidth = failingBlock.Width * 3;
-            int gifHeight = failingBlock.Height * 3;
-
-            int gifX = failingBlock.posX - (gifWidth - failingBlock.Width) / 2;
-            int gifY = failingBlock.posY - (gifHeight - failingBlock.Height) / 2;
-
-            if (isfailstraight) {
-                g.drawImage(failstraight, gifX, gifY, gifWidth, gifHeight, this);
-            } else if (isfailleft) {
-                g.drawImage(failleft, gifX, gifY, gifWidth, gifHeight, this);
-            } else {
-                g.drawImage(failright, gifX, gifY, gifWidth, gifHeight, this);
-            }
-        }
     }
 }
