@@ -8,15 +8,15 @@ import javax.swing.ImageIcon;
 public class Block {
 	// Block Size
 	protected final int Width = 180;
-	protected final int Height = 140;
+	protected final int Height = 150;
 
 	// Block Position
 	protected int posY = 50;
 	protected int posX = 260;
 
 	// Block Movement
-	private int speedX = 5;
-	private int speedY = 10;
+	private static int speedX = 5;
+	private static int speedY = 20;
 	protected boolean falling = false;
 	protected boolean animation = true;
 
@@ -40,6 +40,13 @@ public class Block {
 	public Color getColor() { return (color); }
 
 	public void setImage(Image image) { this.blockImg = image; }
+
+	public static void speedUp() {
+		if (speedX < 0)
+			speedX -= 1;
+		else
+			speedX += 1;
+	}
 
 	public void swing(int screenWidth) {
 		if (!falling) {

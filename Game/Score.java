@@ -9,13 +9,9 @@ import javax.swing.ImageIcon;
 public class Score {
 	// Score
 	public int score = 0;
-
+	
 	// Score Imgae
 	private Image scoreImg;
-
-	// Imgae Size
-	private  int imgWidth = 150;
-	private int imgHeight = 60;
 
 	public Score() {
 		scoreImg = new ImageIcon(getClass().getResource(ImageType.SCORE.getPath())).getImage();
@@ -37,7 +33,7 @@ public class Score {
 		// วาดตัวเลขทีละหลัก
 		for (char c : scoreStr.toCharArray()) {
 			g.drawString(String.valueOf(c), posXstr, posY + 40);  // วาดตัวเลขที่ตำแหน่ง
-			posXstr += 15;
+			posXstr += 25;
 		}
 	}
 
@@ -49,8 +45,8 @@ public class Score {
 
 		// วาดตัวเลขทีละหลัก
 		for (char c : scoreStr.toCharArray()) {
-			g.drawString(String.valueOf(c), posX, y + 37);  // วาดตัวเลขที่ตำแหน่ง
-			posX += 20;
+			g.drawString(String.valueOf(c), posX, y + 40);  // วาดตัวเลขที่ตำแหน่ง
+			posX += 25;
 		}
 	}
 }

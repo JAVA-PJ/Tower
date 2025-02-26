@@ -57,6 +57,9 @@ public class Display extends JPanel implements KeyListener{
     // Sound
     private BackgroundMusic bgSound;
 
+    // Random Event
+    private RandomEvent randomEvent;
+
     // Constructor
     public Display(BackgroundMusic bgSound) {
         this.bgSound = bgSound;
@@ -68,6 +71,7 @@ public class Display extends JPanel implements KeyListener{
         score = new Score();
         blocks = new ArrayList<>();
         health  = new ArrayList<>();
+        randomEvent = new RandomEvent();
         gameOver = new GameOverScreen(this);
         
         for (int i = 1; i <= Health.maxHealth; i++)
@@ -86,6 +90,7 @@ public class Display extends JPanel implements KeyListener{
                     for (Block block : blocks)
                         block.posY += animationSpeed;
                     curOffset += animationSpeed;
+                    randomEvent.moving();
                     if (curOffset >= -yOffset) {
                         newBlock.posY = 50;
                         newBlock.animation = true;
@@ -148,6 +153,8 @@ public class Display extends JPanel implements KeyListener{
                 yOffset -= 280;
                 newBlock.falling = false;
                 score.updateSocre();
+                randomEvent.spawnNewEvent(score.score);
+                Block.speedUp();
                 spawnBlock();
                 newBlock.animation = false;
                 Sound.playSound(SoundType.DROP);
@@ -160,6 +167,8 @@ public class Display extends JPanel implements KeyListener{
                     dieLock = false;
                     newBlock.falling = false;
                     score.updateSocre();
+                    randomEvent.spawnNewEvent(score.score);
+                    Block.speedUp();
                     spawnBlock();
                     newBlock.animation = false;
                     Sound.playSound(SoundType.DROP);
@@ -169,13 +178,12 @@ public class Display extends JPanel implements KeyListener{
 
                     // กำหนดทิศทางการตก
                     int fallDirection;
-                    if (isCompletelyMissed(newBlock, prevBlock)) {
+                    if (isCompletelyMissed(newBlock, prevBlock))
                         fallDirection = 0; // ตกตรง
-                    } else if (newBlock.posX + (newBlock.Width / 2) < prevBlock.posX + (prevBlock.Width / 2)) {
+                    else if (newBlock.posX + (newBlock.Width / 2) < prevBlock.posX + (prevBlock.Width / 2))
                         fallDirection = -1; // ตกซ้าย
-                    } else {
+                    else
                         fallDirection = 1; // ตกขวา
-                    }
                     
                     // สร้าง physics engine สำหรับบล็อกที่กำลังตก
                     fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
@@ -250,6 +258,8 @@ public class Display extends JPanel implements KeyListener{
         healthIdx = Health.maxHealth - 1;
         Health.curHealth = Health.maxHealth;
 
+        randomEvent.clearEvent();
+
         fallingPhysics = null;
         failingBlock = null;
 
@@ -298,6 +308,10 @@ public class Display extends JPanel implements KeyListener{
         // Draw Background, Block, Health, Score
         if (bgImg != null)
             g.drawImage(bgImg, 0, curOffset, getWidth(), getHeight(), this);
+
+        randomEvent.draw(g);
+
+        // Tutorial
         if (blocks.size() == 1 && tutorial)
             g.drawImage(spaceBar, 225, 250, 250, 100, this);
 
