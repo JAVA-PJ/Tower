@@ -30,7 +30,7 @@ public class Health {
 	public static void updateCurHealth() { curHealth -= 1; }
 
 	public boolean checkIfDie() {
-		return (curHealth <= 0 ? true : false);
+		return (curHealth <= 0);
 	}
 
 	public void updateHealth(Graphics g) {

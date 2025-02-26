@@ -1,6 +1,7 @@
 package Game;
 import Enum.ImageType;
 import Enum.SoundType;
+import MainMenu.BackgroundMusic;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -28,7 +29,9 @@ public class Display extends JPanel implements KeyListener{
 
     // Block
     private Block newBlock;
+    private Block failingBlock;
     private ArrayList<Block> blocks;
+    private FallingBlockPhysics fallingPhysics;
 
     // Health
     private ArrayList<Health> health;
@@ -46,19 +49,26 @@ public class Display extends JPanel implements KeyListener{
 	// Image
     private Image bgImg;
     private Image spaceBar;
+    private Image blockImg;
 
     // Score
     protected Score score;
 
+    // Sound
+    private BackgroundMusic bgSound;
+
     // Constructor
-    public Display() {
+    public Display(BackgroundMusic bgSound) {
+        this.bgSound = bgSound;
+
         bgImg = new ImageIcon(getClass().getResource(ImageType.BG_GAME.getPath())).getImage();
+        blockImg = new ImageIcon(getClass().getResource(ImageType.BLOCK.getPath())).getImage();
         spaceBar = new ImageIcon(getClass().getResource(ImageType.SPACEBAR.getPath())).getImage();
-        
+
         score = new Score();
-        gameOver = new GameOverScreen(this);
         blocks = new ArrayList<>();
         health  = new ArrayList<>();
+        gameOver = new GameOverScreen(this);
         
         for (int i = 1; i <= Health.maxHealth; i++)
             health.add(new Health(i * -50, 0));
@@ -103,11 +113,29 @@ public class Display extends JPanel implements KeyListener{
         }
 
         newBlock = blocks.isEmpty() ? new Block() : new Block(new Random().nextInt(App.WIDTH - newBlock.Width));
+        newBlock.setImage(blockImg);
         blocks.add(newBlock);
     }
     
     // Update the game
     private void update() {
+        // ถ้ากำลังจำลองการตกด้วยฟิสิกส์
+        if (fallingPhysics != null) {
+            fallingPhysics.update();
+            
+            // ถ้าบล็อกออกนอกหน้าจอ
+            if (fallingPhysics.isOutOfBounds()) {
+                blocks.remove(failingBlock);
+                failingBlock = null;
+                fallingPhysics = null;
+                
+                if (!blocks.contains(newBlock)) {
+                    spawnBlock();
+                }
+            }
+            return;
+        }
+
         if (blocks.size() != 1)
             newBlock.swing(App.WIDTH);
 
@@ -136,15 +164,37 @@ public class Display extends JPanel implements KeyListener{
                     newBlock.animation = false;
                     Sound.playSound(SoundType.DROP);
                 } else if (blocks.size() > 1 && newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
+                    failingBlock = newBlock;
+                    Block prevBlock = blocks.get(blocks.size() - 2);
+
+                    // กำหนดทิศทางการตก
+                    int fallDirection;
+                    if (isCompletelyMissed(newBlock, prevBlock)) {
+                        fallDirection = 0; // ตกตรง
+                    } else if (newBlock.posX + (newBlock.Width / 2) < prevBlock.posX + (prevBlock.Width / 2)) {
+                        fallDirection = -1; // ตกซ้าย
+                    } else {
+                        fallDirection = 1; // ตกขวา
+                    }
+                    
+                    // สร้าง physics engine สำหรับบล็อกที่กำลังตก
+                    fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
+                    if (fallDirection != 0 && Health.curHealth > 1)
+                        Sound.playSound(SoundType.FALL);
+
                     health.get(healthIdx).setIsDie(true);
                     Health.updateCurHealth();
                     dieLock = true;
                     healthIdx--;
-                    blocks.remove(newBlock);
-                    spawnBlock();
                 }
             }
         }
+    }
+
+    // ฟังก์ชันตรวจสอบว่าบล็อกไม่ชนกันเลย (ไม่มีส่วนที่ซ้อนทับกัน)
+    private boolean isCompletelyMissed(Block currentBlock, Block prevBlock) {
+        return (currentBlock.posX >= prevBlock.posX + prevBlock.Width) ||
+                (currentBlock.posX + currentBlock.Width <= prevBlock.posX);
     }
 
     // Get the last block position
@@ -187,6 +237,7 @@ public class Display extends JPanel implements KeyListener{
         g2d.fillRect(0, 0, getWidth(), getHeight());
     }
 
+    // Reset game
     public void setNewGame() {
         blocks.clear();
         score = new Score();
@@ -199,6 +250,9 @@ public class Display extends JPanel implements KeyListener{
         healthIdx = Health.maxHealth - 1;
         Health.curHealth = Health.maxHealth;
 
+        fallingPhysics = null;
+        failingBlock = null;
+
         for (Health h : health)
             h.setIsDie(false);
         spawnBlock();
@@ -207,7 +261,7 @@ public class Display extends JPanel implements KeyListener{
     // Key Listener
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.falling) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.falling && fallingPhysics == null) {
             if (Health.curHealth > 0 && !isPressed)
                 newBlock.fall();
             isPressed = true;
@@ -233,7 +287,8 @@ public class Display extends JPanel implements KeyListener{
 
         // Check if health less than 0 then stop the game
         if (Health.curHealth <= 0) {
-            gameOver.gameStop(g, gameLoop);
+            bgSound.stop();
+            gameOver.gameStop(g, gameLoop, bgSound);
             return ;
         }
 
@@ -245,8 +300,18 @@ public class Display extends JPanel implements KeyListener{
             g.drawImage(bgImg, 0, curOffset, getWidth(), getHeight(), this);
         if (blocks.size() == 1 && tutorial)
             g.drawImage(spaceBar, 225, 250, 250, 100, this);
-        for (Block block : blocks)
+
+        // วาดบล็อกปกติ
+        for (Block block : blocks) {
+            if (block == failingBlock && fallingPhysics != null)
+                continue; // ข้ามการวาดบล็อกที่กำลังตกด้วยฟิสิกส์ (จะวาดแยก)
             block.drawBlock(g);
+        }
+
+        // วาดบล็อกที่กำลังตกด้วยฟิสิกส์
+        if (fallingPhysics != null)
+            fallingPhysics.draw(g);
+
         for (Health h : health)
             h.updateHealth(g);
         score.drawScore(g);

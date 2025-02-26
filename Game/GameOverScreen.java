@@ -1,6 +1,7 @@
 package Game;
 import Enum.ImageType;
 import Enum.SoundType;
+import MainMenu.BackgroundMusic;
 import MainMenu.Button;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -13,7 +14,7 @@ public class GameOverScreen {
     // Display
     private Display dp;
 
-    private boolean soundOn = false;
+    private boolean blockDropSound = false;
 
     // Image
     private Image gameOverImg;
@@ -33,14 +34,14 @@ public class GameOverScreen {
     }
 
     // Stop the game
-    public void gameStop(Graphics g, Timer gameLoop) {
+    public void gameStop(Graphics g, Timer gameLoop, BackgroundMusic bgSound) {
         // Stop loop game
         gameLoop.stop();
 
         // Play sound
-        if (!soundOn) {
+        if (!blockDropSound) {
             Sound.playSound(SoundType.GAMEOVER);
-            soundOn = true;
+            blockDropSound = true;
         }
         // Draw Game Over Frame
         if (gameOverImg != null)
@@ -54,8 +55,8 @@ public class GameOverScreen {
             @Override
             public void mouseReleased(MouseEvent e) {
                 gameRestart(gameLoop);
-                soundOn = false;
-
+                blockDropSound = false;
+                bgSound.play();
             }
         });
         dp.add(replayButton);

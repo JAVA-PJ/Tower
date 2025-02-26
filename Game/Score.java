@@ -19,12 +19,6 @@ public class Score {
 
 	public Score() {
 		scoreImg = new ImageIcon(getClass().getResource(ImageType.SCORE.getPath())).getImage();
-		// try {
-        //     Image originalImg = ImageIO.read(new File("Assets/score.png"));
-        //     scoreImg = originalImg.getScaledInstance(imgWidth, imgHeight, Image.SCALE_SMOOTH);
-        // } catch (IOException e) {
-        //     System.out.println("Error loading score background image: " + e.getMessage());
-        // }
     }
 
 	public void updateSocre() { score += 1; }

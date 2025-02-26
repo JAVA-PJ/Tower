@@ -8,9 +8,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+
 public class TowerGameMenu extends JFrame {
     private Button StartButton, HowToPlayButton, ExitButton;
     private JLabel SoundButton, SungifLabel;
+    private HowToPlayScreen howToPlayScreen;
     private BackgroundMusic Music;
     private boolean isMuted = false;
     private Image backgroundImage;
@@ -145,13 +147,13 @@ public class TowerGameMenu extends JFrame {
     }
     
     public void showMainMenu() {
+        howToPlayScreen = new HowToPlayScreen(this);
         setContentPane(mainMenuPanel);
         revalidate();
         repaint();
     }
     
     public void showHowToPlayScreen() {
-        HowToPlayScreen howToPlayScreen = new HowToPlayScreen(this);
         setContentPane(howToPlayScreen);
         revalidate();
         repaint();
