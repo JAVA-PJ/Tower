@@ -1,14 +1,15 @@
 package MainMenu;
+import Enum.ImageType;
+import Enum.SoundType;
 import Game.Screen.App;
-import Game.GameSystem.Sound;
+import Sound.BackgroundMusic;
+import Sound.SoundEffect;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import Enum.ImageType;
-import Enum.SoundType;
 
 public class TowerGameMenu extends JFrame {
     private Button StartButton, HowToPlayButton, ExitButton;
@@ -37,7 +38,7 @@ public class TowerGameMenu extends JFrame {
         setResizable(true);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        Music = new BackgroundMusic(SoundType.BG_MUSIC.getPath());
+        Music = new BackgroundMusic(SoundType.SOUND_MENU);
         Music.play();
 
         // Create main menu once
@@ -85,7 +86,7 @@ public class TowerGameMenu extends JFrame {
         SoundButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Sound.playSound(SoundType.CLICK);
+                SoundEffect.playSoundEffect(SoundType.CLICK);
                 Sound(soundOn, soundOff);
             }
             @Override

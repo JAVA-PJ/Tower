@@ -1,4 +1,4 @@
-package Game.GameComponent;
+package Game.Component;
 import Game.Screen.App;
 import java.awt.Graphics;
 import java.awt.Image;

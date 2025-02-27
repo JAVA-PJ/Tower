@@ -1,13 +1,13 @@
 package MainMenu;
-import Game.GameSystem.Sound;
+import Enum.ImageType;
+import Enum.SoundType;
+import Sound.SoundEffect;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import Enum.ImageType;
-import Enum.SoundType;
 
 public class HowToPlayScreen extends JPanel {
     private Image backgroundImage;
@@ -24,7 +24,7 @@ public class HowToPlayScreen extends JPanel {
         backgroundImage = new ImageIcon(getClass().getResource(ImageType.BG_HOWTOPLAY.getPath())).getImage();
         
         // Configure back button
-        ImageIcon Icon = new ImageIcon(getClass().getResource(ImageType.BACK_BUTTON.getPath()));  //ภาพปุ่ม Back
+        ImageIcon Icon = new ImageIcon(getClass().getResource(ImageType.BACK_BUTTON.getPath()));
         Image scaledImage = Icon.getImage().getScaledInstance(150, 70, Image.SCALE_SMOOTH);
         backIcon = new ImageIcon(scaledImage);
         
@@ -39,7 +39,7 @@ public class HowToPlayScreen extends JPanel {
         backButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Sound.playSound(SoundType.CLICK);
+                SoundEffect.playSoundEffect(SoundType.CLICK);
                 // Return to main menu without creating new instance
                 gameMenu.showMainMenu();
             }
@@ -58,7 +58,7 @@ public class HowToPlayScreen extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                updateBackButtonPosition(); 
+                updateBackButtonPosition();
             }
         });
         

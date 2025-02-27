@@ -1,10 +1,10 @@
-package Game.GameComponent;
+package Game.Component;
+import Enum.ImageType;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
-import Enum.ImageType;
 
 public class Score {
 	// Score
@@ -28,9 +28,8 @@ public class Score {
 		g.setFont(new Font("Comic Sans MS", Font.BOLD, 40));
 
 		String scoreStr = String.valueOf(score);
-		int posXstr = posX + 110;  // ตำแหน่งเริ่มต้นของตัวเลข
+		int posXstr = posX + 110;
 
-		// วาดตัวเลขทีละหลัก
 		for (char c : scoreStr.toCharArray()) {
 			g.drawString(String.valueOf(c), posXstr, posY + 40);  // วาดตัวเลขที่ตำแหน่ง
 			posXstr += 30;
@@ -41,11 +40,10 @@ public class Score {
 		g.setFont(new Font("Comic Sans MS", Font.BOLD, 50));
 
 		String scoreStr = String.valueOf(score);
-		int posX = x + 100;  // ตำแหน่งเริ่มต้นของตัวเลข
+		int posX = x + 100;
 
-		// วาดตัวเลขทีละหลัก
 		for (char c : scoreStr.toCharArray()) {
-			g.drawString(String.valueOf(c), posX, y + 40);  // วาดตัวเลขที่ตำแหน่ง
+			g.drawString(String.valueOf(c), posX, y + 40);
 			posX += 30;
 		}
 	}

@@ -1,5 +1,5 @@
-package Game.GameSystem;
-import Game.GameComponent.Block;
+package Game.System;
+import Game.Component.Block;
 import Game.Screen.App;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

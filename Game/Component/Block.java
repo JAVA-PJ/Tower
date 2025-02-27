@@ -1,4 +1,4 @@
-package Game.GameComponent;
+package Game.Component;
 import Enum.ImageType;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,11 +7,11 @@ import javax.swing.ImageIcon;
 
 public class Block {
 	// Block Size
-	public final int Width = 180;
-	public final int Height = 150;
+	public final static int Width = 180;
+	public final static int Height = 140;
 
 	// Block Position
-	private int posY = 50;
+	private int posY = 40;
 	private int posX = 260;
 
 	// Block Movement

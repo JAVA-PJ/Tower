@@ -1,10 +1,10 @@
 package Game.Screen;
 import Enum.ImageType;
 import Enum.SoundType;
-import Game.GameSystem.Display;
-import Game.GameSystem.Sound;
-import MainMenu.BackgroundMusic;
+import Game.System.Display;
 import MainMenu.Button;
+import Sound.BackgroundMusic;
+import Sound.SoundEffect;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -42,7 +42,7 @@ public class GameOverScreen {
 
         // Play sound
         if (!blockDropSound) {
-            Sound.playSound(SoundType.GAMEOVER);
+            SoundEffect.playSoundEffect(SoundType.GAMEOVER);
             blockDropSound = true;
         }
         // Draw Game Over Frame

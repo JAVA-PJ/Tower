@@ -1,4 +1,4 @@
-package Game.GameSystem;
+package Game.System;
 import Enum.EventType;
 import Game.Screen.App;
 import java.awt.Graphics;

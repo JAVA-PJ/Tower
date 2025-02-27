@@ -1,12 +1,13 @@
-package Game.GameSystem;
+package Game.System;
 import Enum.ImageType;
 import Enum.SoundType;
-import Game.GameComponent.Block;
-import Game.GameComponent.Health;
-import Game.GameComponent.Score;
+import Game.Component.Block;
+import Game.Component.Health;
+import Game.Component.Score;
 import Game.Screen.App;
 import Game.Screen.GameOverScreen;
-import MainMenu.BackgroundMusic;
+import Sound.BackgroundMusic;
+import Sound.SoundEffect;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -97,7 +98,7 @@ public class Display extends JPanel implements KeyListener{
                     curOffset += animationSpeed;
                     randomEvent.moving();
                     if (curOffset >= -yOffset) {
-                        newBlock.setPosY(50);
+                        newBlock.setPosY(40);
                         newBlock.setAnimationPrveBlock(true);
                     }
                 }
@@ -122,7 +123,7 @@ public class Display extends JPanel implements KeyListener{
             yOffset -= shiftAmount;
         }
 
-        newBlock = blocks.isEmpty() ? new Block() : new Block(new Random().nextInt(App.WIDTH - newBlock.Width));
+        newBlock = blocks.isEmpty() ? new Block() : new Block(new Random().nextInt(App.WIDTH - Block.Width));
         newBlock.setImage(blockImg);
         blocks.add(newBlock);
     }
@@ -151,10 +152,10 @@ public class Display extends JPanel implements KeyListener{
             newBlock.fall();
             boolean blockLanded = false;
 
-            if (blocks.size() == 1 && newBlock.getPosY() + newBlock.Height >= startPosition) {
+            if (blocks.size() == 1 && newBlock.getPosY() + Block.Height >= 560) {
                 yOffset -= 280;
                 blockLanded = true;
-            } else if (newBlock.getPosY() + newBlock.Height >= getLastBlockPosY()) {
+            } else if (newBlock.getPosY() + Block.Height >= getLastBlockPosY()) {
                 if (collideWithPreviousBlock())
                     blockLanded = true;
                 else if (blocks.size() > 1) {
@@ -172,7 +173,7 @@ public class Display extends JPanel implements KeyListener{
                 Block.speedUp(); // Speed up the block
                 spawnBlock(); // Spawn a new block
                 newBlock.setAnimationPrveBlock(false); // False -> Don't draw the block : True -> Draw the block
-                Sound.playSound(SoundType.DROP); // Play drop sound
+                SoundEffect.playSoundEffect(SoundType.DROP); // Play drop sound
             }
         }
     }
@@ -185,7 +186,7 @@ public class Display extends JPanel implements KeyListener{
         int fallDirection;
         if (isCompletelyMissed(newBlock, prevBlock))
             fallDirection = 0; // ตกตรง
-        else if (newBlock.getPosX() + (newBlock.Width / 2) < prevBlock.getPosX() + (prevBlock.Width / 2))
+        else if (newBlock.getPosX() + (Block.Width / 2) < prevBlock.getPosX() + (Block.Width / 2))
             fallDirection = -1; // ตกซ้าย
         else
             fallDirection = 1; // ตกขวา
@@ -194,7 +195,7 @@ public class Display extends JPanel implements KeyListener{
         fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
 
         if (fallDirection != 0 && Health.getCurHealth() > 1)
-            Sound.playSound(SoundType.FALL);
+            SoundEffect.playSoundEffect(SoundType.FALL);
 
         health.get(healthIdx).setIsDie(true);
         Health.updateCurHealth();
@@ -204,8 +205,8 @@ public class Display extends JPanel implements KeyListener{
 
     // ฟังก์ชันตรวจสอบว่าบล็อกไม่ชนกันเลย (ไม่มีส่วนที่ซ้อนทับกัน)
     private boolean isCompletelyMissed(Block currentBlock, Block prevBlock) {
-        return (currentBlock.getPosX() >= prevBlock.getPosX() + prevBlock.Width) ||
-                (currentBlock.getPosX() + currentBlock.Width <= prevBlock.getPosX());
+        return (currentBlock.getPosX() >= prevBlock.getPosX() + Block.Width) ||
+                (currentBlock.getPosX() + Block.Width <= prevBlock.getPosX());
     }
 
     // Get the last block position
@@ -219,12 +220,12 @@ public class Display extends JPanel implements KeyListener{
             return (false);
 
         Block prevBlock = blocks.get(blocks.size() - 2);
-        int overlapWidth = Math.min(newBlock.getPosX() + newBlock.Width, prevBlock.getPosX() + prevBlock.Width) -
+        int overlapWidth = Math.min(newBlock.getPosX() + Block.Width, prevBlock.getPosX() + Block.Width) -
                            Math.max(newBlock.getPosX(), prevBlock.getPosX());
-        boolean isColliding = (newBlock.getPosY() + newBlock.Height >= prevBlock.getPosY()) &&
-                               (newBlock.getPosX() + newBlock.Width > prevBlock.getPosX()) &&
-                               (newBlock.getPosX() < prevBlock.getPosX() + prevBlock.Width);
-        boolean isTooWide = overlapWidth < (prevBlock.Width / 2);
+        boolean isColliding = (newBlock.getPosY() + Block.Height >= prevBlock.getPosY()) &&
+                               (newBlock.getPosX() + Block.Width > prevBlock.getPosX()) &&
+                               (newBlock.getPosX() < prevBlock.getPosX() + Block.Width);
+        boolean isTooWide = overlapWidth < (Block.Width / 2);
         return (isColliding && !isTooWide);
     }
 

@@ -5,8 +5,8 @@ public enum SoundType {
 	FALL("Assets/rotate.wav"),
 	CLICK("Assets/ClickSound.wav"),
 	GAMEOVER("Assets/gameover.wav"),
-	BG_MUSIC("../Assets/BgMusic.wav"),
-	SOUND_GAME("../Assets/SoundGame.wav");
+	SOUND_MENU("Assets/BgMusic.wav"),
+	SOUND_GAME("Assets/SoundGame.wav");
 
 	private final String sound;
 

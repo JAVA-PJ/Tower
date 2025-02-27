@@ -1,10 +1,9 @@
 package MainMenu;
-import Game.GameSystem.Sound;
+import Enum.SoundType;
+import Sound.SoundEffect;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-
-import Enum.SoundType;
 
 public class Button extends JLabel {
     public Button(ImageIcon icon) {
@@ -20,7 +19,7 @@ public class Button extends JLabel {
             }
             @Override
             public void mousePressed(MouseEvent e) {
-                Sound.playSound(SoundType.CLICK);
+                SoundEffect.playSoundEffect(SoundType.CLICK);
                 setLocation(getX() + 2, getY() + 2);
             }
             @Override
@@ -30,4 +29,3 @@ public class Button extends JLabel {
         });
     }
 }
-
