@@ -1,5 +1,6 @@
-package Game;
+package Game.GameSystem;
 import Enum.EventType;
+import Game.Screen.App;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ public class RandomEvent {
     private Random random;
     private ArrayList<Event> event;
     private int cntSpawn = 0;
-    private final int MAX_OBJECTS = 2;
+    private final int MAX_OBJECTS = 3;
 
     class Event {
         private EventType type;

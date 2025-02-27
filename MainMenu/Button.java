@@ -1,9 +1,10 @@
 package MainMenu;
-import Enum.SoundType;
-import Game.Sound;
+import Game.GameSystem.Sound;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+
+import Enum.SoundType;
 
 public class Button extends JLabel {
     public Button(ImageIcon icon) {

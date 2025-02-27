@@ -1,14 +1,16 @@
-package Game;
-import Enum.ImageType;
+package Game.GameComponent;
+import Game.Screen.App;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
+import Enum.ImageType;
+
 public class Health {
 	// Health
-	protected static final int maxHealth = 3;
+	public static final int maxHealth = 3;
 	private boolean isDie = false;
-	protected static int curHealth = 3;
+	private static int curHealth = 3;
 
 	// Position
 	private int posX = App.WIDTH - 10;
@@ -24,6 +26,10 @@ public class Health {
 		no_health = new ImageIcon(getClass().getResource(ImageType.NO_HEALTH.getPath())).getImage();
 		full_health = new ImageIcon(getClass().getResource(ImageType.FULL_HEALTH.getPath())).getImage();
 	}
+
+	public static int getCurHealth() { return (curHealth); }
+
+	public static void resetCurHealth() { curHealth = maxHealth; }
 
 	public void setIsDie(boolean isDie) { this.isDie = isDie; }
 

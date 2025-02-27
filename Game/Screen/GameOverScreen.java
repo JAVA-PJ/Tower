@@ -1,6 +1,8 @@
-package Game;
+package Game.Screen;
 import Enum.ImageType;
 import Enum.SoundType;
+import Game.GameSystem.Display;
+import Game.GameSystem.Sound;
 import MainMenu.BackgroundMusic;
 import MainMenu.Button;
 import java.awt.Graphics;
@@ -71,8 +73,6 @@ public class GameOverScreen {
             }
         });
         dp.add(exitButton);
-    
-        dp.score.drawGameOverScore(g, 230, 300);
     }
 
     // Restart the game

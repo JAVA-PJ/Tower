@@ -1,8 +1,8 @@
-package Game;
-import Enum.SoundType;
+package Game.GameSystem;
 import java.io.File;
 import java.io.IOException;
 import javax.sound.sampled.*;
+import Enum.SoundType;
 
 public class Sound {
 

@@ -1,4 +1,6 @@
-package Game;
+package Game.GameSystem;
+import Game.GameComponent.Block;
+import Game.Screen.App;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -39,8 +41,8 @@ public class FallingBlockPhysics {
         velocityY += gravity;
         
         // อัปเดตตำแหน่ง
-        block.posX += velocityX;
-        block.posY += velocityY;
+        block.setPosX(block.getPosX() + (int) velocityX);
+        block.setPosY(block.getPosY() + (int) velocityY);
         
         // อัปเดตการหมุน
         angle += angularVelocity;
@@ -54,7 +56,7 @@ public class FallingBlockPhysics {
         Graphics2D g2d = (Graphics2D) g.create();
         
         // ย้ายจุดหมุนไปที่จุดกึ่งกลางของบล็อก
-        g2d.translate(block.posX + block.Width/2, block.posY + block.Height/2);
+        g2d.translate(block.getPosX() + block.Width/2, block.getPosY() + block.Height/2);
         
         // หมุนตามมุม
         g2d.rotate(angle);
@@ -79,9 +81,9 @@ public class FallingBlockPhysics {
     
     public boolean isOutOfBounds() {
         // ตรวจสอบว่าบล็อกออกจากหน้าจอหรือไม่
-        return block.posY > App.HEIGHT + 100 ||
-              block.posX > App.WIDTH + 100 ||
-              block.posX < -100;
+        return block.getPosY() > App.HEIGHT + 100 ||
+              block.getPosX() > App.WIDTH + 100 ||
+              block.getPosX() < -100;
     }
     
     // เพิ่มเมธอดเพื่อเข้าถึงบล็อก

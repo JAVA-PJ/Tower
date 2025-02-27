@@ -1,14 +1,16 @@
-package Game;
+package Game.Screen;
 import Enum.SoundType;
+import Game.GameSystem.Display;
 import MainMenu.BackgroundMusic;
 import javax.swing.JFrame;
+
 public class App extends JFrame {
 	// Screen
 	public static final int HEIGHT = 1000;
 	public static final int WIDTH = 700;
 
 	// Display
-	Display panel;
+	private Display panel;
 
 	// Sound
 	private BackgroundMusic bgSound;

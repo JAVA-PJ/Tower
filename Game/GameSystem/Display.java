@@ -1,6 +1,11 @@
-package Game;
+package Game.GameSystem;
 import Enum.ImageType;
 import Enum.SoundType;
+import Game.GameComponent.Block;
+import Game.GameComponent.Health;
+import Game.GameComponent.Score;
+import Game.Screen.App;
+import Game.Screen.GameOverScreen;
 import MainMenu.BackgroundMusic;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,47 +23,47 @@ import javax.swing.Timer;
 
 public class Display extends JPanel implements KeyListener{
      // Game Panel
-    private Timer gameLoop;
-    private boolean dieLock = false;
-    private boolean isPressed = false;
-    private boolean tutorial = true;
-    private final int animationSpeed = 5;
+    private Timer gameLoop; // Game loop
+    private boolean fallLock = false; // Lock block spawn when falling
+    private boolean isPressed = false; // When space bar is pressed
+    private boolean tutorial = true; // Tutorial
+    private final int animationSpeed = 5; // Animation speed
 
     // Game Over Screen
-    private GameOverScreen gameOver;
+    private GameOverScreen gameOver; // Game Over Screen
 
     // Block
-    private Block newBlock;
-    private Block failingBlock;
-    private ArrayList<Block> blocks;
-    private FallingBlockPhysics fallingPhysics;
+    private Block newBlock; // New block
+    private Block failingBlock; // Failing block
+    private ArrayList<Block> blocks; // Array of blocks
+    private FallingBlockPhysics fallingPhysics; // Falling physics
 
     // Health
-    private ArrayList<Health> health;
-    private int healthIdx = Health.maxHealth - 1;
+    private ArrayList<Health> health; // Array of health
+    private int healthIdx = Health.maxHealth - 1; // Health index
 
     // Start Moving
-    private final int startMovingAt = 2;
+    private final int startMovingAt = 2; // Start moving at 2 blocks
 
     // Control background and block
-    private int yOffset = 0;
-    private int curOffset = 0;
-    private int numBlocks = 0;
-    private double startPosition = App.HEIGHT * (560f / 1000f);
+    private int yOffset = 0; // Y offset
+    private int curOffset = 0; // Current offset
+    private int numBlocks = 0; // Number of blocks
+    private double startPosition = App.HEIGHT * (560f / 1000f); // Start position
 
 	// Image
-    private Image bgImg;
-    private Image spaceBar;
-    private Image blockImg;
+    private Image bgImg; // Background image
+    private Image spaceBar; // Spacebar tutorial image
+    private Image blockImg; // Block image
 
     // Score
-    protected Score score;
+    private Score score; // Score
 
     // Sound
-    private BackgroundMusic bgSound;
+    private BackgroundMusic bgSound; // Background sound
 
     // Random Event
-    private RandomEvent randomEvent;
+    private RandomEvent randomEvent; // Random event
 
     // Constructor
     public Display(BackgroundMusic bgSound) {
@@ -88,12 +93,12 @@ public class Display extends JPanel implements KeyListener{
                 } else {
                     repaint();
                     for (Block block : blocks)
-                        block.posY += animationSpeed;
+                        block.setPosY(block.getPosY() + animationSpeed);
                     curOffset += animationSpeed;
                     randomEvent.moving();
                     if (curOffset >= -yOffset) {
-                        newBlock.posY = 50;
-                        newBlock.animation = true;
+                        newBlock.setPosY(50);
+                        newBlock.setAnimationPrveBlock(true);
                     }
                 }
         });
@@ -108,9 +113,9 @@ public class Display extends JPanel implements KeyListener{
 
     // Spawn a new block
     private void spawnBlock() {
-        if (numBlocks >= startMovingAt && !dieLock) {
-            int oldFirstBlockY = blocks.get(0).posY;
-            int shiftAmount = oldFirstBlockY - blocks.get(1).posY;
+        if (numBlocks >= startMovingAt && !fallLock) {
+            int oldFirstBlockY = blocks.get(0).getPosY();
+            int shiftAmount = oldFirstBlockY - blocks.get(1).getPosY();
 
             while (blocks.size() > 4)
                 blocks.remove(0);
@@ -127,16 +132,14 @@ public class Display extends JPanel implements KeyListener{
         // ถ้ากำลังจำลองการตกด้วยฟิสิกส์
         if (fallingPhysics != null) {
             fallingPhysics.update();
-            
             // ถ้าบล็อกออกนอกหน้าจอ
             if (fallingPhysics.isOutOfBounds()) {
                 blocks.remove(failingBlock);
                 failingBlock = null;
                 fallingPhysics = null;
                 
-                if (!blocks.contains(newBlock)) {
+                if (!blocks.contains(newBlock))
                     spawnBlock();
-                }
             }
             return;
         }
@@ -144,70 +147,70 @@ public class Display extends JPanel implements KeyListener{
         if (blocks.size() != 1)
             newBlock.swing(App.WIDTH);
 
-        if (newBlock.falling) {
+        if (newBlock.getFalling()) {
             newBlock.fall();
+            boolean blockLanded = false;
 
-            if (blocks.size() == 1 && newBlock.posY + newBlock.Height >= startPosition) {
-                numBlocks++;
-                dieLock = false;
+            if (blocks.size() == 1 && newBlock.getPosY() + newBlock.Height >= startPosition) {
                 yOffset -= 280;
-                newBlock.falling = false;
-                score.updateSocre();
-                randomEvent.spawnNewEvent(score.score);
-                Block.speedUp();
-                spawnBlock();
-                newBlock.animation = false;
-                Sound.playSound(SoundType.DROP);
-                return ;
+                blockLanded = true;
+            } else if (newBlock.getPosY() + newBlock.Height >= getLastBlockPosY()) {
+                if (collideWithPreviousBlock())
+                    blockLanded = true;
+                else if (blocks.size() > 1) {
+                    handleFailingBlock();
+                    return ;
+                }
             }
 
-            if (newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
-                if (collideWithPreviousBlock()) {
-                    numBlocks++;
-                    dieLock = false;
-                    newBlock.falling = false;
-                    score.updateSocre();
-                    randomEvent.spawnNewEvent(score.score);
-                    Block.speedUp();
-                    spawnBlock();
-                    newBlock.animation = false;
-                    Sound.playSound(SoundType.DROP);
-                } else if (blocks.size() > 1 && newBlock.posY + newBlock.Height >= getLastBlockPosY()) {
-                    failingBlock = newBlock;
-                    Block prevBlock = blocks.get(blocks.size() - 2);
-
-                    // กำหนดทิศทางการตก
-                    int fallDirection;
-                    if (isCompletelyMissed(newBlock, prevBlock))
-                        fallDirection = 0; // ตกตรง
-                    else if (newBlock.posX + (newBlock.Width / 2) < prevBlock.posX + (prevBlock.Width / 2))
-                        fallDirection = -1; // ตกซ้าย
-                    else
-                        fallDirection = 1; // ตกขวา
-                    
-                    // สร้าง physics engine สำหรับบล็อกที่กำลังตก
-                    fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
-                    if (fallDirection != 0 && Health.curHealth > 1)
-                        Sound.playSound(SoundType.FALL);
-
-                    health.get(healthIdx).setIsDie(true);
-                    Health.updateCurHealth();
-                    dieLock = true;
-                    healthIdx--;
-                }
+            if (blockLanded) {
+                numBlocks++; // Increment number of blocks
+                fallLock = false; // False -> Unlock block spawn : True -> Lock block spawn
+                score.updateSocre(); // Update score by 1
+                newBlock.setFalling(false); // False -> Start swing : True -> Stop swing
+                randomEvent.spawnNewEvent(score.score); // Spawn new event
+                Block.speedUp(); // Speed up the block
+                spawnBlock(); // Spawn a new block
+                newBlock.setAnimationPrveBlock(false); // False -> Don't draw the block : True -> Draw the block
+                Sound.playSound(SoundType.DROP); // Play drop sound
             }
         }
     }
 
+    private void handleFailingBlock() {
+        failingBlock = newBlock;
+        Block prevBlock = blocks.get(blocks.size() - 2);
+
+        // กำหนดทิศทางการตก
+        int fallDirection;
+        if (isCompletelyMissed(newBlock, prevBlock))
+            fallDirection = 0; // ตกตรง
+        else if (newBlock.getPosX() + (newBlock.Width / 2) < prevBlock.getPosX() + (prevBlock.Width / 2))
+            fallDirection = -1; // ตกซ้าย
+        else
+            fallDirection = 1; // ตกขวา
+        
+        // สร้าง physics engine สำหรับบล็อกที่กำลังตก
+        fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
+
+        if (fallDirection != 0 && Health.getCurHealth() > 1)
+            Sound.playSound(SoundType.FALL);
+
+        health.get(healthIdx).setIsDie(true);
+        Health.updateCurHealth();
+        fallLock = true;
+        healthIdx--;
+    }
+
     // ฟังก์ชันตรวจสอบว่าบล็อกไม่ชนกันเลย (ไม่มีส่วนที่ซ้อนทับกัน)
     private boolean isCompletelyMissed(Block currentBlock, Block prevBlock) {
-        return (currentBlock.posX >= prevBlock.posX + prevBlock.Width) ||
-                (currentBlock.posX + currentBlock.Width <= prevBlock.posX);
+        return (currentBlock.getPosX() >= prevBlock.getPosX() + prevBlock.Width) ||
+                (currentBlock.getPosX() + currentBlock.Width <= prevBlock.getPosX());
     }
 
     // Get the last block position
     private int getLastBlockPosY() {
-        return (blocks.size() == 1 ? App.HEIGHT : blocks.get(blocks.size() - 2).posY);
+        return (blocks.size() == 1 ? App.HEIGHT : blocks.get(blocks.size() - 2).getPosY());
     }
 
     // Check if the block is colliding with the previous block
@@ -216,11 +219,11 @@ public class Display extends JPanel implements KeyListener{
             return (false);
 
         Block prevBlock = blocks.get(blocks.size() - 2);
-        int overlapWidth = Math.min(newBlock.posX + newBlock.Width, prevBlock.posX + prevBlock.Width) -
-                           Math.max(newBlock.posX, prevBlock.posX);
-        boolean isColliding = (newBlock.posY + newBlock.Height >= prevBlock.posY) &&
-                               (newBlock.posX + newBlock.Width > prevBlock.posX) &&
-                               (newBlock.posX < prevBlock.posX + prevBlock.Width);
+        int overlapWidth = Math.min(newBlock.getPosX() + newBlock.Width, prevBlock.getPosX() + prevBlock.Width) -
+                           Math.max(newBlock.getPosX(), prevBlock.getPosX());
+        boolean isColliding = (newBlock.getPosY() + newBlock.Height >= prevBlock.getPosY()) &&
+                               (newBlock.getPosX() + newBlock.Width > prevBlock.getPosX()) &&
+                               (newBlock.getPosX() < prevBlock.getPosX() + prevBlock.Width);
         boolean isTooWide = overlapWidth < (prevBlock.Width / 2);
         return (isColliding && !isTooWide);
     }
@@ -253,10 +256,10 @@ public class Display extends JPanel implements KeyListener{
         yOffset = 0;
         curOffset = 0;
         numBlocks = 0;
-        dieLock = false;
+        fallLock = false;
         tutorial = true;
         healthIdx = Health.maxHealth - 1;
-        Health.curHealth = Health.maxHealth;
+        Health.resetCurHealth();
 
         randomEvent.clearEvent();
 
@@ -271,8 +274,8 @@ public class Display extends JPanel implements KeyListener{
     // Key Listener
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.falling && fallingPhysics == null) {
-            if (Health.curHealth > 0 && !isPressed)
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.getFalling() && fallingPhysics == null) {
+            if (Health.getCurHealth() > 0 && !isPressed)
                 newBlock.fall();
             isPressed = true;
         }
@@ -282,8 +285,8 @@ public class Display extends JPanel implements KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE)
-            isPressed = false;
             tutorial = false;
+            isPressed = false;
     }
 
     // Key Listener
@@ -296,9 +299,10 @@ public class Display extends JPanel implements KeyListener{
         super.paintComponent(g);
 
         // Check if health less than 0 then stop the game
-        if (Health.curHealth <= 0) {
+        if (Health.getCurHealth() <= 0) {
             bgSound.stop();
             gameOver.gameStop(g, gameLoop, bgSound);
+            score.drawGameOverScore(g, 230, 300);
             return ;
         }
 

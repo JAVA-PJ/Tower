@@ -3,6 +3,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
+
 public class WindEffect extends JPanel {
     private class WindStreak {
         int x,y,length,speed;

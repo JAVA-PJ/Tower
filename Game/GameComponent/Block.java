@@ -1,4 +1,4 @@
-package Game;
+package Game.GameComponent;
 import Enum.ImageType;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,18 +7,18 @@ import javax.swing.ImageIcon;
 
 public class Block {
 	// Block Size
-	protected final int Width = 180;
-	protected final int Height = 150;
+	public final int Width = 180;
+	public final int Height = 150;
 
 	// Block Position
-	protected int posY = 50;
-	protected int posX = 260;
+	private int posY = 50;
+	private int posX = 260;
 
 	// Block Movement
-	private static int speedX = 5;
+	private static float speedX = 5;
 	private static int speedY = 20;
-	protected boolean falling = false;
-	protected boolean animation = true;
+	private boolean falling = false;
+	private boolean animationPrveBlock = true;
 
 	// Block Image
     private Image blockImg;
@@ -34,18 +34,21 @@ public class Block {
 		this();
 		this.posX = posX;
 	}
-
-	public Image getImage() { return (blockImg); }
-
+	
+	public int getPosX() { return (posX); }
+	public int getPosY() { return (posY); }
 	public Color getColor() { return (color); }
+	public Image getImage() { return (blockImg); }
+	public boolean getFalling() { return (falling); }
 
+	public void setPosX(int posX) { this.posX = posX; }
+	public void setPosY(int posY) { this.posY = posY; }
 	public void setImage(Image image) { this.blockImg = image; }
+	public void setFalling(boolean falling) { this.falling = falling; }
+	public void setAnimationPrveBlock(boolean animationPrveBlock) { this.animationPrveBlock = animationPrveBlock; }
 
 	public static void speedUp() {
-		if (speedX < 0)
-			speedX -= 1;
-		else
-			speedX += 1;
+		speedX = speedX < 0 ? speedX - 0.5f : speedX + 0.5f;
 	}
 
 	public void swing(int screenWidth) {
@@ -62,7 +65,7 @@ public class Block {
 	}
 
 	public void drawBlock(Graphics g) {
-		if (blockImg != null && animation)
+		if (blockImg != null && animationPrveBlock)
 			g.drawImage(blockImg, posX, posY, Width, Height, null);
 	}
 }

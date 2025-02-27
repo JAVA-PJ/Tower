@@ -1,13 +1,14 @@
 package MainMenu;
-import Enum.ImageType;
-import Enum.SoundType;
-import Game.*;
+import Game.Screen.App;
+import Game.GameSystem.Sound;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
+import Enum.ImageType;
+import Enum.SoundType;
 
 public class TowerGameMenu extends JFrame {
     private Button StartButton, HowToPlayButton, ExitButton;

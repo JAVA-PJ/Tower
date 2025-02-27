@@ -1,10 +1,10 @@
-package Game;
-import Enum.ImageType;
+package Game.GameComponent;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
+import Enum.ImageType;
 
 public class Score {
 	// Score
@@ -33,7 +33,7 @@ public class Score {
 		// วาดตัวเลขทีละหลัก
 		for (char c : scoreStr.toCharArray()) {
 			g.drawString(String.valueOf(c), posXstr, posY + 40);  // วาดตัวเลขที่ตำแหน่ง
-			posXstr += 25;
+			posXstr += 30;
 		}
 	}
 
@@ -46,7 +46,7 @@ public class Score {
 		// วาดตัวเลขทีละหลัก
 		for (char c : scoreStr.toCharArray()) {
 			g.drawString(String.valueOf(c), posX, y + 40);  // วาดตัวเลขที่ตำแหน่ง
-			posX += 25;
+			posX += 30;
 		}
 	}
 }
