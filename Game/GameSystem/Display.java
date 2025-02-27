@@ -24,7 +24,7 @@ import javax.swing.Timer;
 public class Display extends JPanel implements KeyListener{
      // Game Panel
     private Timer gameLoop; // Game loop
-    private boolean fallLock = false; // Lock block spawn when falling
+    private boolean spawnLock = false; // Lock block spawn when falling
     private boolean isPressed = false; // When space bar is pressed
     private boolean tutorial = true; // Tutorial
     private final int animationSpeed = 5; // Animation speed
@@ -113,7 +113,7 @@ public class Display extends JPanel implements KeyListener{
 
     // Spawn a new block
     private void spawnBlock() {
-        if (numBlocks >= startMovingAt && !fallLock) {
+        if (numBlocks >= startMovingAt && !spawnLock) {
             int oldFirstBlockY = blocks.get(0).getPosY();
             int shiftAmount = oldFirstBlockY - blocks.get(1).getPosY();
 
@@ -165,7 +165,7 @@ public class Display extends JPanel implements KeyListener{
 
             if (blockLanded) {
                 numBlocks++; // Increment number of blocks
-                fallLock = false; // False -> Unlock block spawn : True -> Lock block spawn
+                spawnLock = false; // False -> Unlock block spawn : True -> Lock block spawn
                 score.updateSocre(); // Update score by 1
                 newBlock.setFalling(false); // False -> Start swing : True -> Stop swing
                 randomEvent.spawnNewEvent(score.score); // Spawn new event
@@ -198,7 +198,7 @@ public class Display extends JPanel implements KeyListener{
 
         health.get(healthIdx).setIsDie(true);
         Health.updateCurHealth();
-        fallLock = true;
+        spawnLock = true;
         healthIdx--;
     }
 
@@ -256,7 +256,7 @@ public class Display extends JPanel implements KeyListener{
         yOffset = 0;
         curOffset = 0;
         numBlocks = 0;
-        fallLock = false;
+        spawnLock = false;
         tutorial = true;
         healthIdx = Health.maxHealth - 1;
         Health.resetCurHealth();
