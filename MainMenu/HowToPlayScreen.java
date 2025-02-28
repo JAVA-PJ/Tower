@@ -40,7 +40,7 @@ public class HowToPlayScreen extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 SoundEffect.playSoundEffect(SoundType.CLICK);
-                // Return to main menu without creating new instance
+                // Return to main menu
                 gameMenu.showMainMenu();
             }
             @Override
@@ -54,7 +54,7 @@ public class HowToPlayScreen extends JPanel {
         });
         add(backButton);
 
-        // Add component listener for this panel
+        // Add component listener
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -65,7 +65,7 @@ public class HowToPlayScreen extends JPanel {
         updateBackButtonPosition();
     }
     
-    // Calculate appropriate button size and position based on screen size
+    // Set back button position and size
     private void updateBackButtonPosition() {
         int fWidth = gameMenu.getWidth();
         int fHeight = gameMenu.getHeight();
@@ -79,7 +79,7 @@ public class HowToPlayScreen extends JPanel {
         Image scaledImage = Icon.getImage().getScaledInstance(Width, Height, Image.SCALE_SMOOTH);
         backIcon = new ImageIcon(scaledImage);
         
-        // Update hover icon with new size (slightly larger)
+        // Update hover icon with new size
         Image hoverImage = Icon.getImage().getScaledInstance((int)(Width * 1.1), (int)(Height * 1.1), Image.SCALE_SMOOTH);
         hoverIcon = new ImageIcon(hoverImage);
         

@@ -41,7 +41,7 @@ public class TowerGameMenu extends JFrame {
         Music = new BackgroundMusic(SoundType.SOUND_MENU);
         Music.play();
 
-        // Create main menu once
+        // Create main menu
         createMainMenuPanel();
         
         // Display main menu
@@ -69,7 +69,7 @@ public class TowerGameMenu extends JFrame {
         // Create sun gif
         ImageIcon sungif = new ImageIcon(getClass().getResource(ImageType.SUN.getPath()));
         SungifLabel = new JLabel(sungif);
-        mainMenuPanel.add(SungifLabel, 0); // เพิ่ม GIF ลงพื้นหลัง
+        mainMenuPanel.add(SungifLabel, 0); // Add gif to background
 
         // Create sound icons
         ImageIcon soundOn = new ImageIcon(new ImageIcon(getClass().getResource(ImageType.SOUND_ON.getPath())).getImage()
@@ -166,20 +166,20 @@ public class TowerGameMenu extends JFrame {
         
         int width = getWidth();
         int height = getHeight();
-        //ปรับขนาด gif
+        // Set size of gif
         int sunSize = Math.max(50, width / 5);
         int sunX = Math.max(100, width / 60);
         int sunY = Math.max(1, height / 80);
-        //โหลดgifใหม่
+        // Load new gif
         ImageIcon Sungif = new ImageIcon(getClass().getResource(ImageType.SUN.getPath()));
         Image scalegif = Sungif.getImage().getScaledInstance(sunSize, sunSize, Image.SCALE_DEFAULT);
-        //อัปเดตgifใหม่
+        // Update gif
         SungifLabel.setIcon(new ImageIcon(scalegif));
-        //เซ็ทตำแหน่งของgif
+        // Set position of gif
         SungifLabel.setBounds(sunX, sunY, sunSize, sunSize);
     }
     
-    //ตำแหน่งปุ่ม GUI
+    //Position of the buttons
     private void resizeComponents() {
         if (StartButton == null || HowToPlayButton == null || ExitButton == null) return ;
         
@@ -194,7 +194,7 @@ public class TowerGameMenu extends JFrame {
         HowToPlayButton.setBounds(X, Y + space + buttonH, buttonW, buttonH);
         ExitButton.setBounds(X, Y + 2 * (space + buttonH), buttonW, buttonH);
         
-        //ขนาดรูปปุ่ม
+        // Size of button
         ImageIcon startIcon = new ImageIcon(getClass().getResource(ImageType.START_BUTTON.getPath()));
         Image scaleStart = startIcon.getImage().getScaledInstance(buttonW, buttonH, Image.SCALE_SMOOTH);
         StartButton.setIcon(new ImageIcon(scaleStart));
@@ -210,7 +210,7 @@ public class TowerGameMenu extends JFrame {
         updateSunGifSize();
     }
 
-    // สลับเสียง
+    // Toggle sound
     private void Sound(ImageIcon soundOnIcon, ImageIcon soundOffIcon) {
         if (isMuted) {
             Music.play();
@@ -220,10 +220,5 @@ public class TowerGameMenu extends JFrame {
             SoundButton.setIcon(soundOffIcon);
         }
         isMuted = !isMuted;
-    }
-    
-    // Method to get music state (for HowToPlayScreen)
-    public boolean isMusicMuted() {
-        return isMuted;
     }
 }

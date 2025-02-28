@@ -5,6 +5,9 @@ import java.util.Random;
 import javax.swing.*;
 
 public class WindEffect extends JPanel {
+    private Random rand = new Random();
+    private ArrayList<WindStreak> wind = new ArrayList<>();
+    
     private class WindStreak {
         int x,y,length,speed;
         float fade;
@@ -16,8 +19,7 @@ public class WindEffect extends JPanel {
             this.fade = fade;
         }
     }
-    private ArrayList<WindStreak> wind = new ArrayList<>();
-    private Random rand = new Random();
+    
     public WindEffect(int width, int height) {
         setOpaque(false);
         generateWind(width, height);
@@ -28,6 +30,7 @@ public class WindEffect extends JPanel {
         });
         timer.start();
     }
+
     private void generateWind(int width, int height) {
         wind.clear(); 
         for (int i = 0; i < 20; i++) {
@@ -40,6 +43,7 @@ public class WindEffect extends JPanel {
             ));
         }
     }
+
     private void moveWind() {
         int width = getWidth();
         for (WindStreak wind : wind) {
@@ -52,6 +56,7 @@ public class WindEffect extends JPanel {
             }
         }
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -64,6 +69,8 @@ public class WindEffect extends JPanel {
             g2d.drawLine(wind.x, wind.y, wind.x + wind.length, wind.y);
         }
     }
+
+
     public void updateWind(int width, int height) {
         generateWind(width, height);
         repaint();

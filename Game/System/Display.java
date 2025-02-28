@@ -2,8 +2,8 @@ package Game.System;
 import Enum.ImageType;
 import Enum.SoundType;
 import Game.Component.Block;
+import Game.Component.GameScore;
 import Game.Component.Health;
-import Game.Component.Score;
 import Game.Screen.App;
 import Game.Screen.GameOverScreen;
 import Sound.BackgroundMusic;
@@ -58,7 +58,7 @@ public class Display extends JPanel implements KeyListener{
     private Image blockImg; // Block image
 
     // Score
-    private Score score; // Score
+    private GameScore gameScore; // Score
 
     // Sound
     private BackgroundMusic bgSound; // Background sound
@@ -74,7 +74,7 @@ public class Display extends JPanel implements KeyListener{
         blockImg = new ImageIcon(getClass().getResource(ImageType.BLOCK.getPath())).getImage();
         spaceBar = new ImageIcon(getClass().getResource(ImageType.SPACEBAR.getPath())).getImage();
 
-        score = new Score();
+        gameScore = new GameScore();
         blocks = new ArrayList<>();
         health  = new ArrayList<>();
         randomEvent = new RandomEvent();
@@ -152,7 +152,7 @@ public class Display extends JPanel implements KeyListener{
             newBlock.fall();
             boolean blockLanded = false;
 
-            if (blocks.size() == 1 && newBlock.getPosY() + Block.Height >= 560) {
+            if (blocks.size() == 1 && newBlock.getPosY() + Block.Height >= startPosition) {
                 yOffset -= 280;
                 blockLanded = true;
             } else if (newBlock.getPosY() + Block.Height >= getLastBlockPosY()) {
@@ -167,9 +167,9 @@ public class Display extends JPanel implements KeyListener{
             if (blockLanded) {
                 numBlocks++; // Increment number of blocks
                 spawnLock = false; // False -> Unlock block spawn : True -> Lock block spawn
-                score.updateSocre(); // Update score by 1
+                gameScore.updateSocre(); // Update score by 1
                 newBlock.setFalling(false); // False -> Start swing : True -> Stop swing
-                randomEvent.spawnNewEvent(score.score); // Spawn new event
+                randomEvent.spawnNewEvent(gameScore.getScore()); // Spawn new event
                 Block.speedUp(); // Speed up the block
                 spawnBlock(); // Spawn a new block
                 newBlock.setAnimationPrveBlock(false); // False -> Don't draw the block : True -> Draw the block
@@ -182,16 +182,16 @@ public class Display extends JPanel implements KeyListener{
         failingBlock = newBlock;
         Block prevBlock = blocks.get(blocks.size() - 2);
 
-        // กำหนดทิศทางการตก
+        // Set fall direction
         int fallDirection;
         if (isCompletelyMissed(newBlock, prevBlock))
-            fallDirection = 0; // ตกตรง
+            fallDirection = 0; // Drop straight down
         else if (newBlock.getPosX() + (Block.Width / 2) < prevBlock.getPosX() + (Block.Width / 2))
-            fallDirection = -1; // ตกซ้าย
+            fallDirection = -1; // Drop left
         else
-            fallDirection = 1; // ตกขวา
+            fallDirection = 1; // Drop right
         
-        // สร้าง physics engine สำหรับบล็อกที่กำลังตก
+        // Create physics for the falling block
         fallingPhysics = new FallingBlockPhysics(failingBlock, fallDirection);
 
         if (fallDirection != 0 && Health.getCurHealth() > 1)
@@ -203,7 +203,7 @@ public class Display extends JPanel implements KeyListener{
         healthIdx--;
     }
 
-    // ฟังก์ชันตรวจสอบว่าบล็อกไม่ชนกันเลย (ไม่มีส่วนที่ซ้อนทับกัน)
+    // Check if the block is completely missed
     private boolean isCompletelyMissed(Block currentBlock, Block prevBlock) {
         return (currentBlock.getPosX() >= prevBlock.getPosX() + Block.Width) ||
                 (currentBlock.getPosX() + Block.Width <= prevBlock.getPosX());
@@ -232,18 +232,18 @@ public class Display extends JPanel implements KeyListener{
     private void mappingBackground(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
-        // ไล่สีฟ้าจากฟ้าอ่อน → ฟ้าเข้ม
-        Color skyTop = new Color(135, 206, 250);  // ฟ้าอ่อน
-        Color skyBottom = new Color(70, 130, 180); // ฟ้าเข้ม
+        // Light Blue Sky -> Dark Blue Sky
+        Color skyTop = new Color(135, 206, 250);  // Light Blue Sky
+        Color skyBottom = new Color(70, 130, 180); // Dark Blue Sky
 
-        // คำนวณระดับสีตามความสูง
+        // Dynamic Sky
         float ratio = Math.min(1.0f, numBlocks * 1.5f / 100.0f);
         int red = (int) (skyTop.getRed() * (1 - ratio) + skyBottom.getRed() * ratio);
         int green = (int) (skyTop.getGreen() * (1 - ratio) + skyBottom.getGreen() * ratio);
         int blue = (int) (skyTop.getBlue() * (1 - ratio) + skyBottom.getBlue() * ratio);
         Color dynamicSky = new Color(red, green, blue);
 
-        // ใช้ Gradient ไล่สีจากด้านบนลงล่าง
+        // Gradient Paint
         GradientPaint gradient = new GradientPaint(0, 0, dynamicSky, 0, getHeight(), skyBottom);
         g2d.setPaint(gradient);
         g2d.fillRect(0, 0, getWidth(), getHeight());
@@ -252,7 +252,9 @@ public class Display extends JPanel implements KeyListener{
     // Reset game
     public void setNewGame() {
         blocks.clear();
-        score = new Score();
+        gameScore.resetScore();
+        Health.resetCurHealth();
+        randomEvent.clearEvent();
 
         yOffset = 0;
         curOffset = 0;
@@ -260,9 +262,6 @@ public class Display extends JPanel implements KeyListener{
         spawnLock = false;
         tutorial = true;
         healthIdx = Health.maxHealth - 1;
-        Health.resetCurHealth();
-
-        randomEvent.clearEvent();
 
         fallingPhysics = null;
         failingBlock = null;
@@ -303,7 +302,6 @@ public class Display extends JPanel implements KeyListener{
         if (Health.getCurHealth() <= 0) {
             bgSound.stop();
             gameOver.gameStop(g, gameLoop, bgSound);
-            score.drawGameOverScore(g, 230, 300);
             return ;
         }
 
@@ -316,14 +314,14 @@ public class Display extends JPanel implements KeyListener{
 
         randomEvent.draw(g);
 
-        // Tutorial
+        // Draw Tutorial
         if (blocks.size() == 1 && tutorial)
             g.drawImage(spaceBar, 225, 250, 250, 100, this);
 
-        // วาดบล็อกปกติ
+        // Draw Blocks
         for (Block block : blocks) {
             if (block == failingBlock && fallingPhysics != null)
-                continue; // ข้ามการวาดบล็อกที่กำลังตกด้วยฟิสิกส์ (จะวาดแยก)
+                continue; // Skip drawing the block that is falling with physics
             block.drawBlock(g);
         }
 
@@ -333,6 +331,6 @@ public class Display extends JPanel implements KeyListener{
 
         for (Health h : health)
             h.updateHealth(g);
-        score.drawScore(g);
+        gameScore.drawScore(g);
     }
 }

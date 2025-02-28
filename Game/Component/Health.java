@@ -1,16 +1,15 @@
 package Game.Component;
+import Enum.ImageType;
 import Game.Screen.App;
 import java.awt.Graphics;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
-import Enum.ImageType;
-
 public class Health {
 	// Health
-	public static final int maxHealth = 3;
 	private boolean isDie = false;
 	private static int curHealth = 3;
+	public static final int maxHealth = 3;
 
 	// Position
 	private int posX = App.WIDTH - 10;

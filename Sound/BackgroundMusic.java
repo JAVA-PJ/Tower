@@ -1,6 +1,5 @@
 package Sound;
 import Enum.SoundType;
-import Interface.Sound;
 import javax.sound.sampled.*;
 
 public class BackgroundMusic extends SoundControl {
@@ -17,6 +16,7 @@ public class BackgroundMusic extends SoundControl {
         }
     }
 
+    // Set volume
     private void setVolume(float value) {
         if (volume != null) {
             volume.setValue(value);

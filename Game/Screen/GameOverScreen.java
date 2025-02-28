@@ -16,7 +16,11 @@ public class GameOverScreen {
     // Display
     private Display dp;
 
-    private boolean blockDropSound = false;
+    // Sound
+    private boolean gameOverSound = false;
+
+    // Score
+    private GameOverScore gameOverScore;
 
     // Image
     private Image gameOverImg;
@@ -30,6 +34,8 @@ public class GameOverScreen {
     public GameOverScreen(Display dp) {
         this.dp = dp;
 
+        gameOverScore = new GameOverScore();
+
         exitImg = new ImageIcon(getClass().getResource(ImageType.EXIT_BUTTON.getPath())).getImage();
         replayImg = new ImageIcon(getClass().getResource(ImageType.REPLAY_BUTTON.getPath())).getImage();
         gameOverImg = new ImageIcon(getClass().getResource(ImageType.BG_GAMEOVER.getPath())).getImage();
@@ -40,16 +46,17 @@ public class GameOverScreen {
         // Stop loop game
         gameLoop.stop();
 
-        // Play sound
-        if (!blockDropSound) {
+        // Play GameOver Sound 1 time : False -> Play sound : True -> Lock sound
+        if (!gameOverSound) {
             SoundEffect.playSoundEffect(SoundType.GAMEOVER);
-            blockDropSound = true;
+            gameOverSound = true;
         }
-        // Draw Game Over Frame
+
+        // Draw GameOver Frame
         if (gameOverImg != null)
             g.drawImage(gameOverImg, 0, 0, dp.getWidth(), dp.getHeight(), dp);
         
-        // Initialize buttons if they're null
+        // Init buttons
         ImageIcon replayIcon = new ImageIcon(replayImg);
         replayButton = new Button(replayIcon);
         replayButton.setBounds(255, 450, 170, 90);
@@ -57,7 +64,7 @@ public class GameOverScreen {
             @Override
             public void mouseReleased(MouseEvent e) {
                 gameRestart(gameLoop);
-                blockDropSound = false;
+                gameOverSound = false;
                 bgSound.play();
             }
         });
@@ -73,6 +80,8 @@ public class GameOverScreen {
             }
         });
         dp.add(exitButton);
+
+        gameOverScore.drawScore(g);
     }
 
     // Restart the game

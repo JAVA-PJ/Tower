@@ -9,6 +9,7 @@ public class SoundControl implements Sound {
     protected Clip sound;
     protected boolean isPlaying = false;
     
+    // Load sound from file
     public void loadSound(SoundType type) {
         try {
             File soundFile = new File(type.getPath());
@@ -20,7 +21,7 @@ public class SoundControl implements Sound {
         }
     }
 
-    
+    // Play sound
     @Override
     public void play() {
         if (sound != null && !isPlaying) {
@@ -29,6 +30,7 @@ public class SoundControl implements Sound {
         }
     }
     
+    // Stop sound
     @Override
     public void stop() {
         if (sound != null && isPlaying) {
