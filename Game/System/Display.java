@@ -229,25 +229,69 @@ public class Display extends JPanel implements KeyListener{
         return (isColliding && !isTooWide);
     }
 
-    // Draw Background Color
+    // Draw Background Gradient
     private void mappingBackground(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-
-        // Pastel Purpley -> Dark Blue Sky
-        Color skyTop = new Color(170, 150, 250);  // Pastel Purple
-        Color skyBottom = new Color(70, 130, 180); // Dark Blue Sky
-
-        // Dynamic Sky
-        float ratio = Math.min(1.0f, numBlocks * 10.0f / 100.0f);
-        int red = (int) (skyTop.getRed() * (1 - ratio) + skyBottom.getRed() * ratio);
-        int green = (int) (skyTop.getGreen() * (1 - ratio) + skyBottom.getGreen() * ratio);
-        int blue = (int) (skyTop.getBlue() * (1 - ratio) + skyBottom.getBlue() * ratio);
-        Color dynamicSky = new Color(red, green, blue);
-
-        // Gradient Paint
-        GradientPaint gradient = new GradientPaint(0, 0, dynamicSky, 0, getHeight(), skyBottom);
+    
+        // Pastel Purple -> Dark Blue Sky -> Black
+        float ratio = Math.min(1.0f, numBlocks * 5.0f / 100.0f);
+        Color skyStart = new Color(170, 150, 250);  // Pastel Purple
+        Color skyMiddle = new Color(70, 130, 180);  // Dark Blue Sky
+        Color skyEnd = new Color(5, 5, 25);         // Black
+        Color bottomColor;
+        Color topColor;
+        
+        if (ratio < 0.5f) {
+            float adjustedRatio = ratio * 2.0f;
+            
+            // pastel purple to dark blue
+            int topRed = (int)(skyStart.getRed() * (1 - adjustedRatio) + skyMiddle.getRed() * adjustedRatio);
+            int topGreen = (int)(skyStart.getGreen() * (1 - adjustedRatio) + skyMiddle.getGreen() * adjustedRatio);
+            int topBlue = (int)(skyStart.getBlue() * (1 - adjustedRatio) + skyMiddle.getBlue() * adjustedRatio);
+            topColor = new Color(topRed, topGreen, topBlue);
+            
+            bottomColor = skyMiddle;
+        } else {
+            // dark blue to black
+            float adjustedRatio = (ratio - 0.5f) * 2.0f;
+            
+            // dark blue to black
+            int bottomRed = (int)(skyMiddle.getRed() * (1 - adjustedRatio) + skyEnd.getRed() * adjustedRatio);
+            int bottomGreen = (int)(skyMiddle.getGreen() * (1 - adjustedRatio) + skyEnd.getGreen() * adjustedRatio);
+            int bottomBlue = (int)(skyMiddle.getBlue() * (1 - adjustedRatio) + skyEnd.getBlue() * adjustedRatio);
+            bottomColor = new Color(bottomRed, bottomGreen, bottomBlue);
+            
+            topColor = skyMiddle;
+        }
+    
+        // Create gradient
+        GradientPaint gradient = new GradientPaint(0, 0, topColor, 0, getHeight(), bottomColor);
         g2d.setPaint(gradient);
         g2d.fillRect(0, 0, getWidth(), getHeight());
+        
+        // Add stars
+        if (ratio > 0.7f)
+            addStars(g2d, ratio);
+    }
+    
+    // Add stars to the background
+    private void addStars(Graphics2D g2d, float ratio) {
+        int numStars = (int)(100 * ((ratio - 0.7f) * 5.0f));
+        Random random = new Random(1);
+        g2d.setColor(Color.WHITE);
+        
+        for (int i = 0; i < numStars; i++) {
+            int x = random.nextInt(App.WIDTH);
+            int y = random.nextInt(App.HEIGHT);
+            int starSize = random.nextInt(3) + 1;
+            
+            // Add starts
+            g2d.setColor(Color.WHITE);
+            if (random.nextFloat() > 0.8f)
+                g2d.fillOval(x, y, starSize + 1, starSize + 1);
+            else
+                g2d.fillOval(x, y, starSize, starSize);
+        }
     }
 
     // Reset game
@@ -311,8 +355,7 @@ public class Display extends JPanel implements KeyListener{
         
         // Draw Background, Block, Health, Score
         if (bgImg != null)
-            g.drawImage(bgImg, 0, curOffset, getWidth(), getHeight(), this);
-
+            g.drawImage(bgImg, 0, curOffset, App.WIDTH, App.HEIGHT, this);
         randomEvent.draw(g);
 
         // Draw Tutorial
