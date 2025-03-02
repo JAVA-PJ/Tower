@@ -229,15 +229,16 @@ public class Display extends JPanel implements KeyListener{
         return (isColliding && !isTooWide);
     }
 
+    // Draw Background Color
     private void mappingBackground(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
-        // Light Blue Sky -> Dark Blue Sky
-        Color skyTop = new Color(135, 206, 250);  // Light Blue Sky
+        // Pastel Purpley -> Dark Blue Sky
+        Color skyTop = new Color(170, 150, 250);  // Pastel Purple
         Color skyBottom = new Color(70, 130, 180); // Dark Blue Sky
 
         // Dynamic Sky
-        float ratio = Math.min(1.0f, numBlocks * 1.5f / 100.0f);
+        float ratio = Math.min(1.0f, numBlocks * 10.0f / 100.0f);
         int red = (int) (skyTop.getRed() * (1 - ratio) + skyBottom.getRed() * ratio);
         int green = (int) (skyTop.getGreen() * (1 - ratio) + skyBottom.getGreen() * ratio);
         int blue = (int) (skyTop.getBlue() * (1 - ratio) + skyBottom.getBlue() * ratio);
