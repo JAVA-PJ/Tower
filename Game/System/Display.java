@@ -300,6 +300,7 @@ public class Display extends JPanel implements KeyListener{
         gameScore.resetScore();
         Health.resetCurHealth();
         randomEvent.clearEvent();
+        Block.resetSpeed();
 
         yOffset = 0;
         curOffset = 0;

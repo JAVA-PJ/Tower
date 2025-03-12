@@ -47,9 +47,9 @@ public class Block {
 	public void setFalling(boolean falling) { this.falling = falling; }
 	public void setAnimationPrveBlock(boolean animationPrveBlock) { this.animationPrveBlock = animationPrveBlock; }
 
-	public static void speedUp() {
-		speedX = speedX < 0 ? speedX - 0.5f : speedX + 0.5f;
-	}
+	public static void resetSpeed() { speedX = 5; }
+	
+	public static void speedUp() { speedX = speedX < 0 ? speedX - 0.5f : speedX + 0.5f; }
 
 	public void swing(int screenWidth) {
 		if (!falling) {

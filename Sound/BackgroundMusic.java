@@ -10,7 +10,7 @@ public class BackgroundMusic extends SoundControl {
         
         if (sound != null) {
             volume = (FloatControl) sound.getControl(FloatControl.Type.MASTER_GAIN);
-            setVolume(-20.0f);
+            setVolume(-10.0f);
             
             sound.loop(Clip.LOOP_CONTINUOUSLY);
         }
