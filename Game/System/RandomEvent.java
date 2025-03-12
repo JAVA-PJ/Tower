@@ -44,17 +44,17 @@ public class RandomEvent {
         
         if (score <= 15) {
             switch (random.nextInt(3)) {
-                case 0 -> eventType = EventType.CLOUD_1;
-                case 1 -> eventType = EventType.CLOUD_2;
-                case 2 -> eventType = EventType.CLOUD_3;
+                case 0: eventType = EventType.CLOUD_1; break;
+                case 1: eventType = EventType.CLOUD_2; break;
+                case 2: eventType = EventType.CLOUD_3; break;
             }
         } else if (score <= 20) {
                 eventType = EventType.MOON_1;
         } else {
             switch (random.nextInt(3)) {
-                case 0 -> eventType = EventType.PLANET_1;
-                case 1 -> eventType = EventType.PLANET_2;
-                case 2 -> eventType = EventType.STAR;
+                case 0: eventType = EventType.PLANET_1; break;
+                case 1: eventType = EventType.PLANET_2; break;
+                case 2: eventType = EventType.STAR; break;
             }
         }
         

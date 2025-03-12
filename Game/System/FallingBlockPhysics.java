@@ -20,21 +20,21 @@ public class FallingBlockPhysics {
         
         // กำหนดค่าเริ่มต้นตามทิศทางการตก
         switch (fallDirection) {
-            case 0 -> { // ตกตรง
+            case 0: // ตกตรง
                 this.velocityX = 0;
                 this.velocityY = 2;
                 this.angularVelocity = 0;
-            }
-            case -1 -> { // ตกซ้าย
+                break;
+            case -1: // ตกซ้าย
                 this.velocityX = -2;
                 this.velocityY = 2;
                 this.angularVelocity = -0.05;
-            }
-            default -> { // ตกขวา
+                break;
+            default: // ตกขวา
                 this.velocityX = 2;
                 this.velocityY = 2;
                 this.angularVelocity = 0.05;
-            }
+                break;
         }
         
         this.angle = 0;
