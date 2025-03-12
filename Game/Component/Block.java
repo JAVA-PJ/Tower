@@ -49,7 +49,7 @@ public class Block {
 
 	public static void resetSpeed() { speedX = 5; }
 	
-	public static void speedUp() { speedX = speedX < 0 ? speedX - 0.5f : speedX + 0.5f; }
+	public static void speedUp() { speedX = speedX < 0 ? speedX - 0.25f : speedX + 0.25f; }
 
 	public void swing(int screenWidth) {
 		if (!falling) {
