@@ -88,7 +88,7 @@ public class Display extends JPanel implements KeyListener{
         setPreferredSize(new Dimension(App.WIDTH, App.HEIGHT));
         addKeyListener(this);
 
-        gameLoop = new Timer(16, e -> {
+        gameLoop = new Timer(0, e -> {
                 if (curOffset >= -yOffset) {
                     gameLoop();
                 } else {
@@ -156,7 +156,7 @@ public class Display extends JPanel implements KeyListener{
                 yOffset -= 280;
                 blockLanded = true;
             } else if (newBlock.getPosY() + Block.Height >= getLastBlockPosY()) {
-                if (collideWithPreviousBlock())
+                if (collisionWithPreviousBlock())
                     blockLanded = true;
                 else if (blocks.size() > 1) {
                     handleFailingBlock();
@@ -215,7 +215,7 @@ public class Display extends JPanel implements KeyListener{
     }
 
     // Check if the block is colliding with the previous block
-    private boolean collideWithPreviousBlock() {
+    private boolean collisionWithPreviousBlock() {
         if (blocks.size() < 2)
             return (false);
 
@@ -320,7 +320,8 @@ public class Display extends JPanel implements KeyListener{
     // Key Listener
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && !newBlock.getFalling() && fallingPhysics == null) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE
+            && !newBlock.getFalling() && fallingPhysics == null) {
             if (Health.getCurHealth() > 0 && !isPressed)
                 newBlock.fall();
             isPressed = true;
