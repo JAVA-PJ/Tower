@@ -1,27 +1,15 @@
 package Game.System;
 import Enum.EventType;
+import Game.Component.Event;
 import Game.Screen.App;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.swing.ImageIcon;
 
 public class RandomEvent {
     private Random random;
     private ArrayList<Event> event;
     private final int MAX_OBJECTS = 3;
-
-    class Event {
-        private int posX, posY;
-        private Image image;
-        
-        public Event(EventType type, int posX, int posY) {
-            this.posX = posX;
-            this.posY = posY;
-            this.image = new ImageIcon(getClass().getResource(type.getPath())).getImage();
-        }
-    }
     
     public RandomEvent() {
         random = new Random();
